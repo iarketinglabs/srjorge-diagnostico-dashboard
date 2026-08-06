@@ -1,0 +1,340 @@
+/* ============================================================
+   PASSWORD GATE
+   ============================================================ */
+
+.gate-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.gate-card {
+  max-width: 460px;
+  width: 100%;
+  padding: 36px 32px;
+}
+
+.gate-title {
+  font-size: 2.2rem;
+  line-height: 1.15;
+  margin: 8px 0 14px;
+}
+
+.gate-copy {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--gunmetal-700);
+  margin: 0 0 20px;
+}
+
+.gate-form { margin-top: 6px; }
+
+/* ============================================================
+   DASHBOARD SHELL
+   ============================================================ */
+
+.dashboard-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dashboard-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 38%) 1fr;
+  gap: 0;
+  min-height: 0;
+}
+
+@media (max-width: 760px) {
+  .dashboard-body { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   ROADMAP HEADER
+   ============================================================ */
+
+.roadmap-header { position: sticky; top: 0; z-index: 5; }
+
+.roadmap-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 0;
+}
+
+.roadmap-brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.roadmap-brand-title { font-size: 0.95rem; margin: 0; }
+.roadmap-brand-sub { font-size: 0.78rem; margin: 2px 0 0; color: var(--gunmetal-700); }
+
+.roadmap-track {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.roadmap-node-wrap { display: flex; align-items: center; flex-shrink: 0; }
+
+.roadmap-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 2px solid var(--gunmetal);
+  border-radius: var(--radius);
+  background: var(--creme-100);
+  padding: 6px 12px;
+  cursor: pointer;
+  min-width: 118px;
+  box-shadow: 3px 3px 0 var(--gunmetal);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.roadmap-node:hover,
+.roadmap-node.is-open {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--gunmetal);
+}
+
+.roadmap-node--done { background: var(--ciano-soft); }
+.roadmap-node--pending { background: var(--creme-200); }
+
+.roadmap-node-index {
+  font-family: "Atomica Bebas", sans-serif;
+  font-size: 0.75rem;
+  color: var(--ciano-dark);
+}
+
+.roadmap-node-label {
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.roadmap-node-state {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  color: var(--gunmetal-700);
+}
+
+.roadmap-connector {
+  width: 22px;
+  height: 2px;
+  background: var(--gunmetal);
+  flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .roadmap-header-inner { padding: 10px 0; gap: 14px; }
+  .roadmap-node { min-width: 96px; padding: 5px 9px; }
+}
+
+/* ── drawer ── */
+
+.roadmap-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 27, 27, 0.45);
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 90px 20px 20px;
+  overflow-y: auto;
+}
+
+.roadmap-drawer {
+  max-width: 560px;
+  width: 100%;
+  padding: 30px 28px;
+  position: relative;
+}
+
+.roadmap-drawer-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  border: 2px solid var(--gunmetal);
+  background: var(--creme-100);
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.roadmap-drawer-title { font-size: 1.9rem; margin: 6px 0 10px; }
+
+.roadmap-pill {
+  display: inline-block;
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 2px solid var(--gunmetal);
+  margin-bottom: 14px;
+}
+
+.roadmap-pill--done { background: var(--ciano); }
+.roadmap-pill--pending { background: var(--creme-200); }
+
+.roadmap-drawer-copy { line-height: 1.6; margin: 0 0 14px; }
+.roadmap-drawer-deliverable { margin: 0 0 18px; line-height: 1.5; }
+.roadmap-drawer-subtitle { font-size: 0.85rem; margin: 0 0 8px; }
+
+.roadmap-drawer-list { margin: 0; padding-left: 20px; line-height: 1.6; }
+.roadmap-drawer-list li { margin-bottom: 6px; }
+
+/* ============================================================
+   KNOWLEDGE GRAPH (left panel)
+   ============================================================ */
+
+.graph-panel {
+  border-right: 2px solid var(--gunmetal);
+  background: rgba(247, 239, 217, 0.55);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.graph-panel-title { padding: 16px 20px 0; margin: 0; }
+
+.graph-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+}
+
+.graph-edge { stroke: rgba(27, 27, 27, 0.28); stroke-width: 1.2; }
+
+.graph-root { fill: var(--gunmetal); }
+.graph-root-label {
+  font-family: "Atomica Bebas", sans-serif;
+  font-size: 13px;
+  fill: var(--creme-100);
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+.graph-node { cursor: pointer; }
+.graph-node circle {
+  fill: var(--ciano);
+  stroke: var(--gunmetal);
+  stroke-width: 1.5;
+  transition: fill 140ms ease, r 140ms ease;
+}
+.graph-node--file circle { fill: var(--amarelo); }
+.graph-node.is-selected circle { fill: var(--vermelho); stroke-width: 2; }
+.graph-node.is-open circle { fill: var(--ciano-dark); }
+.graph-node text {
+  font-family: "Atomica Oswald", sans-serif;
+  font-size: 12px;
+  fill: var(--gunmetal);
+}
+.graph-node:hover circle { stroke-width: 2.5; }
+.graph-node:hover text { fill: var(--ciano-dark); }
+.graph-node:focus { outline: none; }
+.graph-node:focus circle { stroke: var(--vermelho); stroke-width: 2.5; }
+
+/* ============================================================
+   DOCUMENT READER (right panel)
+   ============================================================ */
+
+.reader-panel {
+  padding: 28px 40px 60px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.reader-panel--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.reader-empty-copy { max-width: 420px; line-height: 1.6; color: var(--gunmetal-700); }
+
+.reader-title { font-size: 2.1rem; margin: 8px 0 4px; line-height: 1.1; }
+.reader-status { font-style: italic; color: var(--gunmetal-700); margin: 0 0 12px; }
+
+.reader-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+
+.reader-badge {
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 2px solid var(--gunmetal);
+}
+
+.reader-badge--factual { background: var(--ciano-soft); }
+.reader-badge--hipotese { background: var(--amarelo-soft); }
+.reader-badge--pendente { background: #ffe5e8; }
+
+.reader-body { max-width: 780px; line-height: 1.7; }
+.reader-body h1, .reader-body h2, .reader-body h3 {
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  margin-top: 1.6em;
+}
+.reader-body h1 { font-size: 1.5rem; }
+.reader-body h2 { font-size: 1.25rem; }
+.reader-body h3 { font-size: 1.05rem; }
+.reader-body p { margin: 0.9em 0; }
+.reader-body ul, .reader-body ol { padding-left: 22px; }
+.reader-body li { margin-bottom: 0.4em; }
+.reader-body strong { color: var(--ciano-dark); }
+.reader-body code {
+  background: var(--creme-200);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.9em;
+}
+.reader-body pre {
+  background: var(--gunmetal);
+  color: var(--creme-100);
+  padding: 14px 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.reader-body pre code { background: none; padding: 0; }
+.reader-body blockquote {
+  border-left: 3px solid var(--ciano);
+  margin: 1em 0;
+  padding: 0.2em 0 0.2em 16px;
+  color: var(--gunmetal-700);
+}
+.reader-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 0.92rem;
+}
+.reader-body th, .reader-body td {
+  border: 1px solid var(--creme-300);
+  padding: 6px 10px;
+  text-align: left;
+}
+.reader-body th { background: var(--creme-200); }
+
+@media (max-width: 760px) {
+  .reader-panel { padding: 22px 20px 48px; }
+  .graph-panel { border-right: none; border-bottom: 2px solid var(--gunmetal); }
+}

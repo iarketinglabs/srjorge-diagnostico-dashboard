@@ -1,0 +1,293 @@
+/* ============================================================
+   FONTES — self-hosted, nome de família prefixado "Atomica "
+   ============================================================ */
+
+@font-face {
+  font-family: "Atomica Jost";
+  src: url("../assets/fonts/Google Fonts/Jost-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atomica Oswald";
+  src: url("../assets/fonts/Google Fonts/Oswald-VariableFont_wght.ttf") format("truetype");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atomica Caprasimo";
+  src: url("../assets/fonts/Google Fonts/Caprasimo-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atomica Script";
+  src: url("../assets/fonts/Outras/BrushScriptOpti-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atomica Bebas";
+  src: url("../assets/fonts/Google Fonts/BebasNeue-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atomica Swanky";
+  src: url("../assets/fonts/Google Fonts/FontdinerSwanky-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
+   TOKENS — paleta e variáveis (Átomica Design System)
+   ============================================================ */
+
+:root {
+  --creme-100: #f7efd9;
+  --creme-200: #f3e8cc;
+  --creme-300: #dbc9a6;
+  --gunmetal: #1b1b1b;
+  --gunmetal-700: #3d3d3d;
+  --ciano: #63bec2;
+  --ciano-dark: #137a80;
+  --ciano-soft: #e0f2f3;
+  --ciano-light: #a8dee0;
+  --amarelo: #f7c528;
+  --amarelo-soft: #fef8e4;
+  --vermelho: #b8302f;
+  --radius: 12px;
+  --texture-pulp: url("../assets/textures/pulp.papper-background.png");
+
+  --header-height: 148px;
+}
+
+@media (max-width: 760px) {
+  :root { --header-height: 112px; }
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background-color: var(--creme-100);
+  background-image:
+    linear-gradient(rgba(247, 239, 217, 0.7), rgba(247, 239, 217, 0.7)),
+    var(--texture-pulp);
+  background-size: auto, 760px auto;
+  color: var(--gunmetal);
+  font-family: "Atomica Jost", sans-serif;
+  letter-spacing: 0;
+}
+
+button, input, select, textarea { font: inherit; }
+a { color: inherit; }
+
+/* ============================================================
+   PARTÍCULAS — camadas
+   ============================================================ */
+
+.page-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+}
+
+.particle-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  backdrop-filter: blur(1px) saturate(1.12);
+  -webkit-backdrop-filter: blur(1px) saturate(1.12);
+}
+
+.particle-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.particle-vintage-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, rgba(27, 27, 27, 0) 60%, rgba(27, 27, 27, 0.16) 100%),
+    repeating-radial-gradient(circle at 30% 20%, rgba(27, 27, 27, 0.035) 0 1px, transparent 1px 3px);
+}
+
+.page-content { position: relative; z-index: 2; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
+.container { width: min(100% - 64px, 1420px); margin-inline: auto; }
+.section { padding: 72px 0; }
+
+/* ============================================================
+   TIPOGRAFIA
+   ============================================================ */
+
+.font-display { font-family: "Atomica Script", "Atomica Caprasimo", serif; font-weight: 400; }
+
+.font-label {
+  font-family: "Atomica Bebas", "Atomica Oswald", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  color: var(--ciano-dark);
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+}
+
+.script-red { color: var(--vermelho); }
+
+/* ============================================================
+   MARCA
+   ============================================================ */
+
+.brand-mark { height: 36px; width: 36px; object-fit: contain; }
+
+.brand-wordmark {
+  color: var(--gunmetal);
+  font-family: "Atomica Swanky", "Atomica Caprasimo", serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  line-height: 1;
+  text-shadow: 3px 3px 0 var(--ciano-light);
+}
+
+.atomica-header {
+  width: 100%;
+  border-bottom: 2px solid var(--gunmetal);
+  background:
+    linear-gradient(rgba(247, 197, 40, 0.9), rgba(247, 197, 40, 0.86)),
+    var(--texture-pulp);
+  background-size: auto, 720px auto;
+  box-shadow: 0 3px 0 rgba(27, 27, 27, 0.12);
+}
+
+/* ============================================================
+   BOTÃO
+   ============================================================ */
+
+.atomica-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 3px solid var(--gunmetal);
+  border-radius: var(--radius);
+  padding: 10px 18px;
+  background: var(--ciano);
+  color: var(--gunmetal);
+  font-family: "Atomica Bebas", "Atomica Oswald", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 5px 5px 0 var(--gunmetal);
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.atomica-button:hover {
+  transform: translate(-2px, -2px);
+  background: var(--ciano-light);
+  box-shadow: 7px 7px 0 var(--gunmetal);
+}
+
+.atomica-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+  box-shadow: 5px 5px 0 var(--gunmetal);
+}
+
+.atomica-button.secondary { background: var(--amarelo); color: var(--gunmetal); }
+.atomica-button.dark      { background: var(--gunmetal); color: var(--creme-100); }
+.atomica-button.outline   { background: var(--creme-100); color: var(--gunmetal); }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.poster-card {
+  border: 3px solid var(--gunmetal);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(rgba(247, 239, 217, 0.85), rgba(247, 239, 217, 0.85)),
+    var(--texture-pulp);
+  background-size: auto, 640px auto;
+  box-shadow: 7px 7px 0 var(--amarelo);
+}
+
+.poster-card-cyan {
+  border: 3px solid var(--gunmetal);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(rgba(247, 239, 217, 0.85), rgba(247, 239, 217, 0.85)),
+    var(--texture-pulp);
+  background-size: auto, 640px auto;
+  box-shadow: 12px 12px 0 var(--ciano);
+}
+
+/* ============================================================
+   FORMULÁRIO
+   ============================================================ */
+
+.field { display: grid; gap: 6px; }
+
+.field label {
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.86rem;
+}
+
+.field-control {
+  width: 100%;
+  border: 2px solid rgba(27, 27, 27, 0.78);
+  border-radius: 4px;
+  background: var(--creme-100);
+  padding: 12px 14px;
+  color: var(--gunmetal);
+  outline: none;
+}
+
+.field-control:focus { box-shadow: 0 0 0 3px rgba(103, 187, 192, 0.36); }
+.field-control[aria-invalid="true"] { background: #ffe5e8; border-color: var(--vermelho); }
+.error-text { color: #b8122b; font-size: 0.86rem; font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .particle-stage { display: none; }
+}
+
+/* ============================================================
+   RESPONSIVO — breakpoint único: 760px
+   ============================================================ */
+
+@media (max-width: 760px) {
+  .container { width: min(100% - 20px, 1420px); }
+  .brand-mark { height: 28px; width: 28px; }
+  .brand-wordmark { font-size: 1.15rem; text-shadow: 2px 2px 0 var(--ciano-light); }
+  .atomica-button { font-size: 1rem; }
+  .particle-stage { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
