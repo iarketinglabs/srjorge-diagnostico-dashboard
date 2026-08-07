@@ -75,7 +75,14 @@ export function RoadmapHeader({ roadmap, statusSnapshot }: Props) {
                 <span className="roadmap-node-label">{stage.nome}</span>
                 <span className="roadmap-node-state">{STATE_LABEL[stage.estadoAtual]}</span>
               </button>
-              {i < roadmap.length - 1 && <span className="roadmap-connector" aria-hidden="true" />}
+              {i < roadmap.length - 1 && (
+                <span
+                  className={`roadmap-connector ${
+                    stage.estadoAtual === "done" || stage.estadoAtual === "in-progress" ? "roadmap-connector--flow" : ""
+                  }`}
+                  aria-hidden="true"
+                />
+              )}
             </li>
           ))}
         </ol>
