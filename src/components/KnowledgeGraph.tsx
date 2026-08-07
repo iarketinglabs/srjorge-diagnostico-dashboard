@@ -1,13 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ContentTreeNode } from "../lib/decrypt";
+import { displayName } from "../lib/displayName";
+import { ancestorFolders } from "../lib/docLinks";
 
 const ZOOM_MIN = 0.35;
 const ZOOM_MAX = 3;
+
+export type FocusRequest = { path: string };
 
 type Props = {
   tree: ContentTreeNode;
   selectedPath: string | null;
   onSelectFile: (path: string) => void;
+  focusRequest: FocusRequest | null;
 };
 
 type LaidOutNode = {
@@ -18,19 +23,6 @@ type LaidOutNode = {
   parentX: number;
   parentY: number;
 };
-
-const DISPLAY_NAMES: Record<string, string> = {
-  AIOS: "AIOS",
-  Operacoes: "Operações",
-  SrJorge: "Sr Jorge",
-};
-
-function displayName(node: ContentTreeNode): string {
-  if (DISPLAY_NAMES[node.name]) return DISPLAY_NAMES[node.name];
-  if (node.type === "file") return node.name.replace(/\.md$/, "");
-  // strip numeric prefixes like "1.Comercial" -> "Comercial"
-  return node.name.replace(/^\d+\./, "");
-}
 
 // Layout is computed relative to the origin (0,0); the SVG <g> is translated
 // to the center of the viewBox at render time — a single offset, not baked
@@ -75,9 +67,26 @@ function layout(
   });
 }
 
-export function KnowledgeGraph({ tree, selectedPath, onSelectFile }: Props) {
+export function KnowledgeGraph({ tree, selectedPath, onSelectFile, focusRequest }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
+
+  // When navigation (a clickable path, breadcrumb, or back/forward) asks to
+  // reveal a document, expand every ancestor folder on its way and reset the
+  // canvas view so the newly-revealed branch is actually visible.
+  useEffect(() => {
+    if (!focusRequest) return;
+    const ancestors = ancestorFolders(focusRequest.path);
+    if (ancestors.length > 0) {
+      setExpanded((prev) => {
+        const next = new Set(prev);
+        ancestors.forEach((a) => next.add(a));
+        return next;
+      });
+    }
+    setView({ x: 0, y: 0, zoom: 1 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusRequest]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // React's synthetic onWheel is attached as a passive listener, so
