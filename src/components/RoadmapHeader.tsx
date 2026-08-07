@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { RoadmapStage, StatusSnapshot } from "../lib/decrypt";
+import type { RoadmapItem, RoadmapItemStatus, RoadmapStage, StatusSnapshot } from "../lib/decrypt";
 import logoUrl from "../assets/logos/logo-atomica-preta-sem-fundo.png";
 
 type Props = {
@@ -7,11 +7,45 @@ type Props = {
   statusSnapshot: StatusSnapshot;
 };
 
-const STATE_LABEL: Record<RoadmapStage["estadoAtual"], string> = {
+const STATE_LABEL: Record<RoadmapItemStatus, string> = {
   done: "Concluído",
   "in-progress": "Em andamento",
   pending: "Pendente",
 };
+
+const CHECKLIST_GROUPS: { status: RoadmapItemStatus; label: string; icon: string }[] = [
+  { status: "done", label: "Concluído", icon: "✓" },
+  { status: "in-progress", label: "Em andamento", icon: "◐" },
+  { status: "pending", label: "Pendente", icon: "○" },
+];
+
+function Checklist({ items }: { items: RoadmapItem[] }) {
+  return (
+    <div className="roadmap-checklist">
+      {CHECKLIST_GROUPS.map((group) => {
+        const groupItems = items.filter((it) => it.status === group.status);
+        if (groupItems.length === 0) return null;
+        return (
+          <div key={group.status} className={`roadmap-checklist-group roadmap-checklist-group--${group.status}`}>
+            <p className="font-label roadmap-checklist-group-title">
+              {group.label} <span className="roadmap-checklist-count">{groupItems.length}</span>
+            </p>
+            <ul className="roadmap-checklist-items">
+              {groupItems.map((it, idx) => (
+                <li key={idx} className={`roadmap-checklist-item roadmap-checklist-item--${it.status}`}>
+                  <span className="roadmap-checklist-icon" aria-hidden="true">
+                    {group.icon}
+                  </span>
+                  <span>{it.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export function RoadmapHeader({ roadmap, statusSnapshot }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -63,11 +97,7 @@ export function RoadmapHeader({ roadmap, statusSnapshot }: Props) {
               <strong>Entregável:</strong> {active.entregavel}
             </p>
             <h3 className="font-label roadmap-drawer-subtitle">O que já foi feito / está pendente</h3>
-            <ul className="roadmap-drawer-list">
-              {active.detalhes.map((d, idx) => (
-                <li key={idx}>{d}</li>
-              ))}
-            </ul>
+            <Checklist items={active.detalhes} />
           </div>
         </div>
       )}

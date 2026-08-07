@@ -35,8 +35,10 @@ export function DocumentReader({ file }: Props) {
       <h2 className="font-display reader-title">{file.title}</h2>
       {file.status && <p className="reader-status">{file.status}</p>}
       <StatusBadges tags={file.tags} />
-      <div className="reader-body">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{file.body}</ReactMarkdown>
+      <div className="reader-text-surface">
+        <div className="reader-body">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{file.body}</ReactMarkdown>
+        </div>
       </div>
     </div>
   );

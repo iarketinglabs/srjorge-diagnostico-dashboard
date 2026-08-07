@@ -14,15 +14,22 @@ export type ContentTreeNode = {
   children?: ContentTreeNode[];
 };
 
+export type RoadmapItemStatus = "done" | "in-progress" | "pending";
+
+export type RoadmapItem = {
+  status: RoadmapItemStatus;
+  text: string;
+};
+
 export type RoadmapStage = {
   id: string;
   numero: number;
   nome: string;
   semanas: string;
-  estadoAtual: "done" | "in-progress" | "pending";
+  estadoAtual: RoadmapItemStatus;
   resumo: string;
   entregavel: string;
-  detalhes: string[];
+  detalhes: RoadmapItem[];
 };
 
 export type StatusSnapshot = {

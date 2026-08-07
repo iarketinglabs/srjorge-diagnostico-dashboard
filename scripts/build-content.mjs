@@ -93,13 +93,13 @@ const roadmap = [
       "Mapeamento operacional de gargalos, auditoria de cultura/fluência em IA, inventário de ferramentas, políticas de uso responsável e priorização de quick-wins.",
     entregavel: "Mapa de gargalos + roadmap de 6 meses (preliminar)",
     detalhes: [
-      "Kickoff realizado em 08/07/2026 — Gate 0 concluído.",
-      "Governança e AI Champions definidos: Cris (Mídia), Joana (Atendimento), Wesley (Design).",
-      "Escopo formalizado (contrato assinado por e-signature em 23/07/2026).",
-      "Entrevista 1 com liderança (Alexandre + Letícia) realizada em 23/07/2026.",
-      "Acesso a Drive, ClickUp e Google Chat concedido e confirmado (04/08/2026).",
-      "Pendente: consolidar Documento de Diagnóstico formal com baseline numérico.",
-      "Pendente: análise de stack consolidada, estimativa de timeline, ICP negativo/deal-breakers.",
+      { status: "done", text: "Kickoff realizado em 08/07/2026 — Gate 0 concluído." },
+      { status: "done", text: "Governança e AI Champions definidos: Cris (Mídia), Joana (Atendimento), Wesley (Design)." },
+      { status: "done", text: "Escopo formalizado (contrato assinado por e-signature em 23/07/2026)." },
+      { status: "done", text: "Entrevista 1 com liderança (Alexandre + Letícia) realizada em 23/07/2026." },
+      { status: "done", text: "Acesso a Drive, ClickUp e Google Chat concedido e confirmado (04/08/2026)." },
+      { status: "pending", text: "Consolidar Documento de Diagnóstico formal com baseline numérico." },
+      { status: "pending", text: "Análise de stack consolidada, estimativa de timeline, ICP negativo/deal-breakers." },
     ],
   },
   {
@@ -112,12 +112,12 @@ const roadmap = [
       "Entrevistas individuais com o time (6-8 pessoas), mapeamento AS-IS de processos críticos, documentação e backlog de conhecimento.",
     entregavel: "Mapas de processo + backlog de documentação + tabela de COI por gargalo",
     detalhes: [
-      "Pendente: validar fluxo ClickUp → Contentino → aprovação → entrega.",
-      "Pendente: mapear fluxo comercial completo e indicadores de retenção/upsell.",
-      "Pendente: documentar onboarding de novos clientes (briefing, criação de pastas/listas, kickoff, checkpoints).",
-      "Pendente: mapear processo de atendimento (canais, handoffs, registros, critérios de qualidade).",
-      "Pendente: aprofundar controle de horas contratadas e alerta antecipado (limiar de 70%).",
-      "Sessões de coleta de Atendimento, Design e Mídia/Criação ainda sem evidência registrada.",
+      { status: "pending", text: "Validar fluxo ClickUp → Contentino → aprovação → entrega." },
+      { status: "pending", text: "Mapear fluxo comercial completo e indicadores de retenção/upsell." },
+      { status: "pending", text: "Documentar onboarding de novos clientes (briefing, criação de pastas/listas, kickoff, checkpoints)." },
+      { status: "pending", text: "Mapear processo de atendimento (canais, handoffs, registros, critérios de qualidade)." },
+      { status: "pending", text: "Aprofundar controle de horas contratadas e alerta antecipado (limiar de 70%)." },
+      { status: "pending", text: "Sessões de coleta de Atendimento, Design e Mídia/Criação ainda sem evidência registrada." },
     ],
   },
   {
@@ -129,7 +129,7 @@ const roadmap = [
     resumo:
       "Benchmark de maturidade em IA vs. agências de porte similar, plano de gestão de mudança, modelo de ROI com baseline e consolidação do roadmap de 12 meses.",
     entregavel: "Plano de gestão da mudança + modelo de ROI + roadmap de 12 meses",
-    detalhes: ["Ainda não iniciado — depende da consolidação da Fase 2."],
+    detalhes: [{ status: "pending", text: "Ainda não iniciado — depende da consolidação da Fase 2." }],
   },
   {
     id: "fase-4",
@@ -139,7 +139,10 @@ const roadmap = [
     estadoAtual: "pending",
     resumo: "Apresentação executiva dos achados consolidados à liderança.",
     entregavel: "Relatório consolidado + apresentação executiva",
-    detalhes: ["Data-alvo definida no deck de kickoff: 16/09/2026. Nenhum marco intermediário fechado ainda."],
+    detalhes: [
+      { status: "done", text: "Data-alvo definida no deck de kickoff: 16/09/2026." },
+      { status: "pending", text: "Nenhum marco intermediário fechado ainda." },
+    ],
   },
   {
     id: "follow-up",
@@ -149,7 +152,7 @@ const roadmap = [
     estadoAtual: "pending",
     resumo: "Checkpoint de validação: quick-wins adotados? plano de reinvestimento de tempo funcionando?",
     entregavel: "Ajuste de roadmap com base no que de fato aconteceu",
-    detalhes: ["Ainda não iniciado."],
+    detalhes: [{ status: "pending", text: "Ainda não iniciado." }],
   },
 ];
 

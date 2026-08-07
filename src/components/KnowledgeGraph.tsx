@@ -1,5 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ContentTreeNode } from "../lib/decrypt";
+
+const ZOOM_MIN = 0.35;
+const ZOOM_MAX = 3;
 
 type Props = {
   tree: ContentTreeNode;
@@ -74,6 +77,37 @@ function layout(
 
 export function KnowledgeGraph({ tree, selectedPath, onSelectFile }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // React's synthetic onWheel is attached as a passive listener, so
+  // preventDefault() inside it silently fails (and warns). A native
+  // listener with { passive: false } is required to stop the browser's
+  // own scroll/zoom from fighting the custom pan/zoom below.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      if (e.ctrlKey) {
+        setView((prev) => {
+          const factor = e.deltaY > 0 ? 0.9 : 1.1;
+          const nextZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, prev.zoom * factor));
+          return { ...prev, zoom: nextZoom };
+        });
+      } else if (e.shiftKey) {
+        setView((prev) => ({ ...prev, x: prev.x - e.deltaY }));
+      } else {
+        setView((prev) => ({ ...prev, y: prev.y - e.deltaY }));
+      }
+    }
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  function resetView() {
+    setView({ x: 0, y: 0, zoom: 1 });
+  }
 
   const nodes = useMemo(() => {
     // Level 1 (tree.children) is always visible; layout each as its own sector.
@@ -111,62 +145,75 @@ export function KnowledgeGraph({ tree, selectedPath, onSelectFile }: Props) {
 
   return (
     <div className="graph-panel">
-      <p className="eyebrow graph-panel-title">Base de conhecimento</p>
-      <div className="graph-scroll">
-        <svg
-          viewBox={`0 0 ${canvasSize} ${canvasSize}`}
-          width={canvasSize}
-          height={canvasSize}
-          role="img"
-          aria-label="Mapa da base de conhecimento do diagnóstico"
+      <div className="graph-panel-header">
+        <p className="eyebrow graph-panel-title">Base de conhecimento</p>
+        <div className="graph-panel-controls">
+          <span className="graph-hint">shift+scroll move · ctrl+scroll zoom</span>
+          <button type="button" className="graph-reset-btn" onClick={resetView}>
+            Centralizar
+          </button>
+        </div>
+      </div>
+      <div className="graph-scroll" ref={scrollRef}>
+        <div
+          className="graph-canvas"
+          style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})` }}
         >
-          <g transform={`translate(${halfSize}, ${halfSize})`}>
-            {nodes.map((n) => (
-              <line
-                key={`edge-${n.node.path}`}
-                x1={n.parentX}
-                y1={n.parentY}
-                x2={n.x}
-                y2={n.y}
-                className="graph-edge"
-              />
-            ))}
-            <circle cx={CENTER.x} cy={CENTER.y} r={26} className="graph-root" />
-            <text x={CENTER.x} y={CENTER.y + 4} textAnchor="middle" className="graph-root-label">
-              Diagnóstico
-            </text>
-            {nodes.map((n) => {
-              const isFolder = n.node.type === "folder";
-              const isOpen = isFolder && expanded.has(n.node.path);
-              const isSelected = n.node.type === "file" && n.node.path === selectedPath;
-              const r = isFolder ? 14 - n.depth : 6;
-              const textOffset = r + 8;
-              const anchorLeft = n.x < CENTER.x;
-              return (
-                <g
-                  key={n.node.path}
-                  className={`graph-node graph-node--${n.node.type} ${isOpen ? "is-open" : ""} ${isSelected ? "is-selected" : ""}`}
-                  onClick={() => handleClick(n)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") handleClick(n);
-                  }}
-                >
-                  <circle cx={n.x} cy={n.y} r={r} />
-                  <text
-                    x={n.x + (anchorLeft ? -textOffset : textOffset)}
-                    y={n.y + 4}
-                    textAnchor={anchorLeft ? "end" : "start"}
+          <svg
+            viewBox={`0 0 ${canvasSize} ${canvasSize}`}
+            width={canvasSize}
+            height={canvasSize}
+            role="img"
+            aria-label="Mapa da base de conhecimento do diagnóstico"
+          >
+            <g transform={`translate(${halfSize}, ${halfSize})`}>
+              {nodes.map((n) => (
+                <line
+                  key={`edge-${n.node.path}`}
+                  x1={n.parentX}
+                  y1={n.parentY}
+                  x2={n.x}
+                  y2={n.y}
+                  className="graph-edge"
+                />
+              ))}
+              <circle cx={CENTER.x} cy={CENTER.y} r={26} className="graph-root" />
+              <text x={CENTER.x} y={CENTER.y + 4} textAnchor="middle" className="graph-root-label">
+                Diagnóstico
+              </text>
+              {nodes.map((n) => {
+                const isFolder = n.node.type === "folder";
+                const isOpen = isFolder && expanded.has(n.node.path);
+                const isSelected = n.node.type === "file" && n.node.path === selectedPath;
+                const r = isFolder ? 14 - n.depth : 6;
+                const textOffset = r + 8;
+                const anchorLeft = n.x < CENTER.x;
+                return (
+                  <g
+                    key={n.node.path}
+                    className={`graph-node graph-node--${n.node.type} ${isOpen ? "is-open" : ""} ${isSelected ? "is-selected" : ""}`}
+                    onClick={() => handleClick(n)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") handleClick(n);
+                    }}
                   >
-                    {displayName(n.node)}
-                    {isFolder ? (isOpen ? " –" : " +") : ""}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
-        </svg>
+                    <circle cx={n.x} cy={n.y} r={r} />
+                    <text
+                      x={n.x + (anchorLeft ? -textOffset : textOffset)}
+                      y={n.y + 4}
+                      textAnchor={anchorLeft ? "end" : "start"}
+                    >
+                      {displayName(n.node)}
+                      {isFolder ? (isOpen ? " –" : " +") : ""}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          </svg>
+        </div>
       </div>
     </div>
   );

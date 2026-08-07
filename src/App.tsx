@@ -4,6 +4,7 @@ import { RoadmapHeader } from "./components/RoadmapHeader";
 import { KnowledgeGraph } from "./components/KnowledgeGraph";
 import { DocumentReader } from "./components/DocumentReader";
 import { ParticleField } from "./components/ParticleField";
+import { ResizableSplit } from "./components/ResizableSplit";
 import type { ContentFile, DashboardContent } from "./lib/decrypt";
 
 export default function App() {
@@ -45,12 +46,16 @@ export default function App() {
       <div className="page-content dashboard-shell">
         <RoadmapHeader roadmap={content.roadmap} statusSnapshot={content.statusSnapshot} />
         <main className="dashboard-body">
-          <KnowledgeGraph
-            tree={content.docs.tree}
-            selectedPath={selectedFile?.path ?? null}
-            onSelectFile={handleSelectFile}
+          <ResizableSplit
+            left={
+              <KnowledgeGraph
+                tree={content.docs.tree}
+                selectedPath={selectedFile?.path ?? null}
+                onSelectFile={handleSelectFile}
+              />
+            }
+            right={<DocumentReader file={selectedFile} />}
           />
-          <DocumentReader file={selectedFile} />
         </main>
       </div>
     </div>

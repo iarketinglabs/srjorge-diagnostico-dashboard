@@ -43,14 +43,47 @@
 
 .dashboard-body {
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(320px, 38%) 1fr;
-  gap: 0;
+  display: flex;
   min-height: 0;
 }
 
+/* ============================================================
+   RESIZABLE SPLIT
+   ============================================================ */
+
+.resizable-split {
+  flex: 1;
+  display: grid;
+  min-height: 0;
+  min-width: 0;
+}
+
+.resizable-split-pane { min-height: 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column; }
+
+.resizable-split-handle {
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--creme-300);
+  touch-action: none;
+}
+
+.resizable-split-handle:hover,
+.resizable-split-handle:active { background: var(--ciano); }
+
+.resizable-split-grip {
+  width: 2px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--gunmetal);
+  opacity: 0.5;
+}
+
 @media (max-width: 760px) {
-  .dashboard-body { grid-template-columns: 1fr; }
+  .dashboard-body { flex-direction: column; }
+  .resizable-split { grid-template-columns: 1fr !important; grid-template-rows: auto auto; }
+  .resizable-split-handle { display: none; }
 }
 
 /* ============================================================
@@ -196,8 +229,65 @@
 .roadmap-drawer-deliverable { margin: 0 0 18px; line-height: 1.5; }
 .roadmap-drawer-subtitle { font-size: 0.85rem; margin: 0 0 8px; }
 
-.roadmap-drawer-list { margin: 0; padding-left: 20px; line-height: 1.6; }
-.roadmap-drawer-list li { margin-bottom: 6px; }
+.roadmap-checklist { display: flex; flex-direction: column; gap: 18px; }
+
+.roadmap-checklist-group-title {
+  font-size: 0.8rem;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.roadmap-checklist-count {
+  font-family: "Atomica Jost", sans-serif;
+  font-weight: 400;
+  text-transform: none;
+  background: var(--creme-200);
+  border: 1px solid var(--gunmetal);
+  border-radius: 999px;
+  padding: 0 7px;
+  font-size: 0.72rem;
+}
+
+.roadmap-checklist-group--done .roadmap-checklist-group-title { color: var(--ciano-dark); }
+.roadmap-checklist-group--in-progress .roadmap-checklist-group-title { color: #9c6f00; }
+.roadmap-checklist-group--pending .roadmap-checklist-group-title { color: var(--vermelho); }
+
+.roadmap-checklist-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+
+.roadmap-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+
+.roadmap-checklist-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 2px solid var(--gunmetal);
+  margin-top: 1px;
+}
+
+.roadmap-checklist-item--done { background: var(--ciano-soft); }
+.roadmap-checklist-item--done .roadmap-checklist-icon { background: var(--ciano); color: var(--gunmetal); }
+
+.roadmap-checklist-item--in-progress { background: var(--amarelo-soft); }
+.roadmap-checklist-item--in-progress .roadmap-checklist-icon { background: var(--amarelo); color: var(--gunmetal); }
+
+.roadmap-checklist-item--pending { background: var(--creme-200); }
+.roadmap-checklist-item--pending .roadmap-checklist-icon { background: var(--creme-100); color: var(--gunmetal-700); }
+.roadmap-checklist-item--pending span:last-child { color: var(--gunmetal-700); }
 
 /* ============================================================
    KNOWLEDGE GRAPH (left panel)
@@ -211,12 +301,50 @@
   min-height: 0;
 }
 
-.graph-panel-title { padding: 16px 20px 0; margin: 0; }
+.graph-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px 0;
+  flex-wrap: wrap;
+}
+
+.graph-panel-title { margin: 0; }
+
+.graph-panel-controls { display: flex; align-items: center; gap: 10px; }
+
+.graph-hint {
+  font-size: 0.7rem;
+  color: var(--gunmetal-700);
+  white-space: nowrap;
+}
+
+.graph-reset-btn {
+  border: 2px solid var(--gunmetal);
+  border-radius: 999px;
+  background: var(--creme-100);
+  padding: 3px 10px;
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.graph-reset-btn:hover { background: var(--ciano-soft); }
 
 .graph-scroll {
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
+  position: relative;
   padding: 10px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.graph-canvas {
+  transform-origin: 0 0;
+  width: fit-content;
 }
 
 .graph-edge { stroke: rgba(27, 27, 27, 0.28); stroke-width: 1.2; }
@@ -287,6 +415,14 @@
 .reader-badge--factual { background: var(--ciano-soft); }
 .reader-badge--hipotese { background: var(--amarelo-soft); }
 .reader-badge--pendente { background: #ffe5e8; }
+
+.reader-text-surface {
+  background: var(--creme-100);
+  border-radius: 10px;
+  padding: 20px 28px;
+  max-width: calc(780px + 56px);
+  margin-left: -4px;
+}
 
 .reader-body { max-width: 780px; line-height: 1.7; }
 .reader-body h1, .reader-body h2, .reader-body h3 {
