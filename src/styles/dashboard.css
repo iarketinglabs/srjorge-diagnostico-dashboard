@@ -38,7 +38,8 @@
 .dashboard-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 0;
 }
 
 .dashboard-body {
@@ -81,9 +82,17 @@
 }
 
 @media (max-width: 760px) {
+  /* Stacked mobile layout scrolls as one page instead of containing
+     each pane in its own fixed-height scroll region. */
+  .page-shell { height: auto; overflow: visible; }
+  .dashboard-shell { height: auto; }
   .dashboard-body { flex-direction: column; }
   .resizable-split { grid-template-columns: 1fr !important; grid-template-rows: auto auto; }
   .resizable-split-handle { display: none; }
+  .resizable-split-pane { overflow: visible; }
+  .graph-panel { flex: none; }
+  .graph-scroll { height: 60vh; }
+  .reader-panel { flex: none; overflow-y: visible; }
 }
 
 /* ============================================================
@@ -298,6 +307,7 @@
   background: rgba(247, 239, 217, 0.55);
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-height: 0;
 }
 
@@ -385,6 +395,7 @@
 .reader-panel {
   padding: 28px 40px 60px;
   overflow-y: auto;
+  flex: 1;
   min-height: 0;
 }
 
