@@ -112,12 +112,12 @@ const roadmap = [
       "Entrevistas individuais com o time (6-8 pessoas), mapeamento AS-IS de processos críticos, documentação e backlog de conhecimento.",
     entregavel: "Mapas de processo + backlog de documentação + tabela de COI por gargalo",
     detalhes: [
-      { status: "pending", text: "Validar fluxo ClickUp → Contentino → aprovação → entrega." },
-      { status: "pending", text: "Mapear fluxo comercial completo e indicadores de retenção/upsell." },
-      { status: "pending", text: "Documentar onboarding de novos clientes (briefing, criação de pastas/listas, kickoff, checkpoints)." },
-      { status: "pending", text: "Mapear processo de atendimento (canais, handoffs, registros, critérios de qualidade)." },
-      { status: "pending", text: "Aprofundar controle de horas contratadas e alerta antecipado (limiar de 70%)." },
-      { status: "pending", text: "Sessões de coleta de Atendimento, Design e Mídia/Criação ainda sem evidência registrada." },
+      { status: "done", text: "Fluxos preliminares de Comercial, onboarding de clientes, Atendimento e Recrutamento/Onboarding documentados com fontes primárias." },
+      { status: "done", text: "Reuniões dedicadas de Comercial, Atendimento e Recrutamento/Onboarding mineradas; AS-IS permanecem preliminares quando falta validação do executor." },
+      { status: "done", text: "Controle de horas e requisitos de alerta antecipado aprofundados; piloto e reconciliação com dados de sistema seguem pendentes." },
+      { status: "pending", text: "Validar os fluxos preliminares com executores e registros reais do ClickUp, Drive e ferramentas de operação." },
+      { status: "pending", text: "Consolidar baselines comparáveis de volume, esforço, custo e resultado antes de COI, ROI ou priorização final." },
+      { status: "pending", text: "Concluir as coletas dedicadas de Design, Mídia e Conteúdo." },
     ],
   },
   {
@@ -157,25 +157,22 @@ const roadmap = [
 ];
 
 const statusSnapshot = {
-  atualizadoEm: "2026-08-06",
-  faseGateAtual: "Fase 0: Diagnóstico (Gate 0: Kickoff concluído em 2026-07-08)",
+  atualizadoEm: "2026-08-18",
+  faseGateAtual: "Fase 2: Aprofundamento em andamento",
   resumo:
-    "O projeto permanece em Fase 0: Diagnóstico, com o Gate 0: Kickoff concluído em 2026-07-08. Há evidência real para os três passos do Gate 0: kickoff realizado, governança/champions definidos e escopo formalizado. Evidências recentes (novos tutoriais, entrevista de Letícia em 2026-08-04) não constituem aprovação do Documento de Diagnóstico nem avanço para a Fase 1.",
+    "A Fase 2 está em andamento. Comercial, Atendimento e Recrutamento/Onboarding receberam rodadas dedicadas de evidência; a base agora reúne fluxos AS-IS preliminares, gargalos e lacunas rastreáveis. Nenhum baseline, COI, ROI, score de maturidade ou priorização final foi fechado sem os dados exigidos.",
   proximosPassos: [
-    "Validar fluxo ClickUp → Contentino → aprovação → entrega (permissões, handoffs, critérios de qualidade, fonte oficial do dashboard).",
-    "Mapear fluxo comercial completo e indicadores de retenção/upsell, incluindo dependências de liderança.",
-    "Documentar onboarding de novos clientes (briefing, criação de pastas/listas, kickoff, checkpoints).",
-    "Mapear processo de atendimento — canais, handoffs, registros, critérios de qualidade.",
-    "Aprofundar controle de horas contratadas e desenhar requisitos de alerta antecipado (limiar de 70%).",
-    "Consolidar achados em Documento de Diagnóstico formal, incluindo baseline numérico e fronteira Humano vs. IA.",
-    "Avançar itens da Fase 0 ainda sem evidência: análise de stack consolidada, estimativa de timeline, ICP negativo/deal-breakers.",
-    "Validar/organizar acessos já concedidos (Drive, ClickUp, Google Chat) e materiais recebidos como fontes de diagnóstico.",
+    "Validar Comercial, Atendimento e Recrutamento/Onboarding com executores e registros reais, preservando o status preliminar até então.",
+    "Receber e analisar os materiais pendentes de recrutamento: transcrições de fit, perfis Sólides, job tests, ficha ClickUp e apresentação de integração.",
+    "Reconstruir controles de horas e testar os requisitos de alerta antecipado antes de recomendar automação.",
+    "Concluir coletas de Design, Mídia e Conteúdo e consolidar baselines comparáveis.",
+    "Consolidar o Documento de Diagnóstico formal somente após as validações e baselines necessários.",
   ],
   bloqueios: [
     "Tutoriais contam como evidência operacional, não validação completa — permissões/nomes/métricas/conclusões precisam de confirmação em ambiente real.",
     "Documento de Diagnóstico ainda não consolidado — evidências dispersas entre entrevistas, diretrizes e materiais; falta síntese formal, baseline numérico e validações finais.",
-    "Sessões de coleta de Atendimento, Design e Mídia/Criação ainda sem evidência registrada.",
-    "Fatura enviada mas ainda não paga — fatura corrigida enviada em 30/07/2026, confirmação de pagamento pendente.",
+    "AS-IS de áreas já mapeadas continuam preliminares até validação por executor e registro operacional; relatos de liderança não substituem essa etapa.",
+    "Design, Mídia e Conteúdo ainda requerem coletas dedicadas ou validações adicionais para fechamento de seus AS-IS.",
     "Formulário de liderança de Letícia permanece rascunho — não deve ser usado para decisões nem para resolver divergências com a resposta do CFO.",
   ],
 };
