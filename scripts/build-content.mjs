@@ -125,11 +125,18 @@ const roadmap = [
     numero: 3,
     nome: "Estratégico",
     semanas: "Semanas 6–7",
-    estadoAtual: "pending",
+    estadoAtual: "in-progress",
     resumo:
-      "Benchmark de maturidade em IA vs. agências de porte similar, plano de gestão de mudança, modelo de ROI com baseline e consolidação do roadmap de 12 meses.",
-    entregavel: "Plano de gestão da mudança + modelo de ROI + roadmap de 12 meses",
-    detalhes: [{ status: "pending", text: "Ainda não iniciado — depende da consolidação da Fase 2." }],
+      "Benchmark de maturidade em IA vs. agências de porte similar, plano de gestão de mudança, política mínima de uso de IA, modelo de ROI com baseline e consolidação do roadmap de 12 meses.",
+    entregavel: "Plano de gestão da mudança + política mínima de IA + modelo de ROI + roadmap de 12 meses",
+    detalhes: [
+      { status: "done", text: "Plano de adoção de IA e gestão da mudança estruturado (Entregaveis/GestaoMudanca) — pendente validação direta de Letícia e Alexandre." },
+      { status: "done", text: "Política mínima de uso seguro e responsável de IA estruturada (Entregaveis/GovernancaIA), com 6 regras propostas — pendente validação da liderança e checagem jurídica de LGPD." },
+      { status: "done", text: "Sistema de mensuração de COI/ROI estruturado (Entregaveis/MensuracaoROI) — método, TCO e portões definidos, nenhum valor calculado por falta de baseline/custo-hora confirmados." },
+      { status: "done", text: "Roadmap técnico de 12 meses priorizado por RICE, com 7 candidatas fixas de 0-3 meses por pedido direto do cliente (Entregaveis/RoadmapOportunidades)." },
+      { status: "pending", text: "Benchmark de maturidade frente a agências de porte semelhante — não iniciado." },
+      { status: "pending", text: "Scorecard de readiness (6+1 dimensões) segue sem pontuação — falta autoavaliação direta de todos os champions/stakeholders." },
+    ],
   },
   {
     id: "fase-4",
@@ -157,22 +164,23 @@ const roadmap = [
 ];
 
 const statusSnapshot = {
-  atualizadoEm: "2026-08-18",
-  faseGateAtual: "Fase 2: Aprofundamento em andamento",
+  atualizadoEm: "2026-09-08",
+  faseGateAtual: "Fase 3: Estratégico em andamento",
   resumo:
-    "A Fase 2 está em andamento. Comercial, Atendimento e Recrutamento/Onboarding receberam rodadas dedicadas de evidência; a base agora reúne fluxos AS-IS preliminares, gargalos e lacunas rastreáveis. Nenhum baseline, COI, ROI, score de maturidade ou priorização final foi fechado sem os dados exigidos.",
+    "A Fase 2 avançou substancialmente (entrevistas diretas com os 3 champions concluídas, mineração de contas-modelo e da conta Embelleze Europe) e a Fase 3 já entrega três kits estruturados: gestão da mudança, política mínima de uso de IA e sistema de mensuração de ROI — organizados em Entregaveis/ (GestaoMudanca, GovernancaIA, MensuracaoROI, RoadmapOportunidades). Nenhum desses kits está validado pelo cliente ainda, e nenhum baseline, COI, ROI, score de maturidade ou priorização final foi fechado sem os dados exigidos (RN-12 a RN-15).",
   proximosPassos: [
-    "Validar Comercial, Atendimento e Recrutamento/Onboarding com executores e registros reais, preservando o status preliminar até então.",
-    "Receber e analisar os materiais pendentes de recrutamento: transcrições de fit, perfis Sólides, job tests, ficha ClickUp e apresentação de integração.",
-    "Reconstruir controles de horas e testar os requisitos de alerta antecipado antes de recomendar automação.",
-    "Concluir coletas de Design, Mídia e Conteúdo e consolidar baselines comparáveis.",
-    "Consolidar o Documento de Diagnóstico formal somente após as validações e baselines necessários.",
+    "Validar os 3 kits da Fase 3 (gestão da mudança, política mínima de IA, sistema de mensuração de ROI) diretamente com Letícia e Alexandre.",
+    "Entrevistar Tati e Camila diretamente sobre uso, postura e maturidade de IA — hoje só há percepção do CFO.",
+    "Definir champion/ownership de Conteúdo — única das 6 áreas ainda sem esse papel.",
+    "Fechar os 4 elementos da política mínima de IA ainda sem confirmação de regra explícita (shadow AI, autoridade de exceção, dados sensíveis em modelo público, credenciais de sistemas de cliente).",
+    "Confirmar custo-hora por função e baseline comercial reconciliado — pré-requisitos de qualquer cálculo real de COI/ROI.",
+    "Concluir benchmark de maturidade frente a agências de porte semelhante — não iniciado.",
   ],
   bloqueios: [
-    "Tutoriais contam como evidência operacional, não validação completa — permissões/nomes/métricas/conclusões precisam de confirmação em ambiente real.",
-    "Documento de Diagnóstico ainda não consolidado — evidências dispersas entre entrevistas, diretrizes e materiais; falta síntese formal, baseline numérico e validações finais.",
-    "AS-IS de áreas já mapeadas continuam preliminares até validação por executor e registro operacional; relatos de liderança não substituem essa etapa.",
-    "Design, Mídia e Conteúdo ainda requerem coletas dedicadas ou validações adicionais para fechamento de seus AS-IS.",
+    "Nenhuma das 6+1 dimensões de readiness está pontuada — falta autoavaliação direta de todos os champions/stakeholders (RN-14).",
+    "Baseline financeiro (indicador \"Novos Clientes\" diverge entre 12 e 0 conforme respondente) segue não reconciliado — bloqueia qualquer COI/ROI real.",
+    "Contradição de esforço em Mídia (~104h/mês liderança vs. auto-relato de Cris) segue não reconciliada.",
+    "Elementos de LGPD/cláusula de IA em contrato exigem validação jurídica local, fora da competência deste diagnóstico.",
     "Formulário de liderança de Letícia permanece rascunho — não deve ser usado para decisões nem para resolver divergências com a resposta do CFO.",
   ],
 };
