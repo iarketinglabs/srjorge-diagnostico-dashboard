@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import type { ContentTreeNode } from "../lib/decrypt";
 import { displayName } from "../lib/displayName";
 import { ancestorFolders } from "../lib/docLinks";
@@ -95,7 +95,10 @@ function bezierPath(x1: number, y1: number, x2: number, y2: number): string {
 export function KnowledgeGraph({ tree, selectedPath, onSelectFile, focusRequest }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
+  const [isDragging, setIsDragging] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef({ startClientX: 0, startClientY: 0, startViewX: 0, startViewY: 0, distance: 0, pointerId: -1 });
+  const didDragRef = useRef(false);
 
   // When navigation (a clickable path, breadcrumb, or back/forward) asks to
   // reveal a document, expand every ancestor folder on its way and reset the
@@ -141,6 +144,57 @@ export function KnowledgeGraph({ tree, selectedPath, onSelectFile, focusRequest 
 
   function resetView() {
     setView({ x: 0, y: 0, zoom: 1 });
+  }
+
+  // Left-click-drag pans the canvas. Pointer capture is only claimed once
+  // real movement crosses a small threshold — capturing eagerly on every
+  // pointerdown redirects the browser's synthesized "click" event to this
+  // container instead of the node underneath, silently breaking node
+  // clicks. Below the threshold this is indistinguishable from a plain
+  // click on a node, so handleClick() is left free to run normally.
+  function handlePointerDown(e: PointerEvent<HTMLDivElement>) {
+    if (e.button !== 0) return;
+    dragRef.current = {
+      startClientX: e.clientX,
+      startClientY: e.clientY,
+      startViewX: view.x,
+      startViewY: view.y,
+      distance: 0,
+      pointerId: e.pointerId,
+    };
+    didDragRef.current = false;
+  }
+
+  function handlePointerMove(e: PointerEvent<HTMLDivElement>) {
+    const d = dragRef.current;
+    if (d.pointerId !== e.pointerId) return;
+    // A mouse's pointerId is reused across separate click/drag cycles, so
+    // matching pointerId alone isn't enough — without this check, a single
+    // earlier click leaves dragRef "armed", and any later plain hover
+    // (no button held) reads as an ongoing drag. Bail unless the primary
+    // button is actually currently pressed.
+    if ((e.buttons & 1) !== 1) {
+      dragRef.current.pointerId = -1;
+      return;
+    }
+    const dx = e.clientX - d.startClientX;
+    const dy = e.clientY - d.startClientY;
+    d.distance = Math.max(d.distance, Math.hypot(dx, dy));
+    if (d.distance > 4) {
+      if (!didDragRef.current) {
+        didDragRef.current = true;
+        setIsDragging(true);
+        e.currentTarget.setPointerCapture(e.pointerId);
+      }
+      setView((prev) => ({ ...prev, x: d.startViewX + dx, y: d.startViewY + dy }));
+    }
+  }
+
+  function handlePointerUp(e: PointerEvent<HTMLDivElement>) {
+    if (dragRef.current.pointerId !== e.pointerId) return;
+    dragRef.current.pointerId = -1;
+    setIsDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   }
 
   const nodes = useMemo(() => {
@@ -190,6 +244,7 @@ export function KnowledgeGraph({ tree, selectedPath, onSelectFile, focusRequest 
   }
 
   function handleClick(n: LaidOutNode) {
+    if (didDragRef.current) return;
     if (n.node.type === "folder") toggle(n.node.path);
     else onSelectFile(n.node.path);
   }
@@ -203,13 +258,20 @@ export function KnowledgeGraph({ tree, selectedPath, onSelectFile, focusRequest 
       <div className="graph-panel-header">
         <p className="eyebrow graph-panel-title">Base de conhecimento</p>
         <div className="graph-panel-controls">
-          <span className="graph-hint">shift+scroll move · ctrl+scroll zoom</span>
+          <span className="graph-hint">arraste para mover · shift+scroll move · ctrl+scroll zoom</span>
           <button type="button" className="graph-reset-btn" onClick={resetView}>
             Centralizar
           </button>
         </div>
       </div>
-      <div className="graph-scroll" ref={scrollRef}>
+      <div
+        className={`graph-scroll ${isDragging ? "graph-scroll--grabbing" : ""}`}
+        ref={scrollRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
         <div
           className="graph-canvas"
           style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})` }}

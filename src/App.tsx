@@ -5,11 +5,14 @@ import { KnowledgeGraph, type FocusRequest } from "./components/KnowledgeGraph";
 import { DocumentReader } from "./components/DocumentReader";
 import { ParticleField } from "./components/ParticleField";
 import { ResizableSplit } from "./components/ResizableSplit";
+import { UserSelect } from "./components/UserSelect";
 import type { DashboardContent } from "./lib/decrypt";
+import { clearCurrentUser, getCurrentUser, type UserName } from "./lib/user";
 
 export default function App() {
   const [content, setContent] = useState<DashboardContent | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [currentUser, setCurrentUserState] = useState<UserName | null>(() => getCurrentUser());
 
   // Browser-history-style navigation: `history` is the stack of visited
   // document paths, `historyIndex` the current position within it — back/
@@ -69,6 +72,17 @@ export default function App() {
     );
   }
 
+  if (!currentUser) {
+    return (
+      <div className="page-shell">
+        <ParticleField />
+        <div className="page-content">
+          <UserSelect onSelect={setCurrentUserState} />
+        </div>
+      </div>
+    );
+  }
+
   const currentPath = historyIndex >= 0 ? history[historyIndex] : null;
   const selectedFile = currentPath ? content.docs.files.find((f) => f.path === currentPath) ?? null : null;
 
@@ -76,7 +90,17 @@ export default function App() {
     <div className="page-shell">
       <ParticleField />
       <div className="page-content dashboard-shell">
-        <RoadmapHeader roadmap={content.roadmap} statusSnapshot={content.statusSnapshot} />
+        <RoadmapHeader
+          roadmap={content.roadmap}
+          statusSnapshot={content.statusSnapshot}
+          currentUser={currentUser}
+          onChangeUser={() => {
+            clearCurrentUser();
+            setCurrentUserState(null);
+          }}
+          files={content.docs.files}
+          onNavigate={navigate}
+        />
         <main className="dashboard-body">
           <ResizableSplit
             left={
@@ -97,6 +121,7 @@ export default function App() {
                 canGoForward={historyIndex < history.length - 1}
                 onBack={goBack}
                 onForward={goForward}
+                currentUser={currentUser}
               />
             }
           />

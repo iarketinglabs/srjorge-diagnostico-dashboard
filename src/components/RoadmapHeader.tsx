@@ -1,10 +1,17 @@
 import { useState } from "react";
+import type { ContentFile } from "../lib/decrypt";
 import type { RoadmapItem, RoadmapItemStatus, RoadmapStage, StatusSnapshot } from "../lib/decrypt";
+import { initials, type UserName } from "../lib/user";
+import { ValidationPanel } from "./ValidationPanel";
 import logoUrl from "../assets/logos/logo-atomica-preta-sem-fundo.png";
 
 type Props = {
   roadmap: RoadmapStage[];
   statusSnapshot: StatusSnapshot;
+  currentUser: UserName | null;
+  onChangeUser: () => void;
+  files: ContentFile[];
+  onNavigate: (path: string) => void;
 };
 
 const STATE_LABEL: Record<RoadmapItemStatus, string> = {
@@ -47,8 +54,9 @@ function Checklist({ items }: { items: RoadmapItem[] }) {
   );
 }
 
-export function RoadmapHeader({ roadmap, statusSnapshot }: Props) {
+export function RoadmapHeader({ roadmap, statusSnapshot, currentUser, onChangeUser, files, onNavigate }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [validationOpen, setValidationOpen] = useState(false);
   const active = roadmap.find((s) => s.id === openId) ?? null;
 
   return (
@@ -86,7 +94,23 @@ export function RoadmapHeader({ roadmap, statusSnapshot }: Props) {
             </li>
           ))}
         </ol>
+
+        <div className="roadmap-user-controls">
+          <button type="button" className="graph-reset-btn" onClick={() => setValidationOpen(true)}>
+            Validação
+          </button>
+          {currentUser && (
+            <button type="button" className="roadmap-user-badge" onClick={onChangeUser} title="Trocar usuário">
+              <span className="validation-check-avatar">{initials(currentUser)}</span>
+              {currentUser}
+            </button>
+          )}
+        </div>
       </div>
+
+      {validationOpen && (
+        <ValidationPanel files={files} onNavigate={onNavigate} onClose={() => setValidationOpen(false)} />
+      )}
 
       {active && (
         <div className="roadmap-drawer-backdrop" onClick={() => setOpenId(null)}>
