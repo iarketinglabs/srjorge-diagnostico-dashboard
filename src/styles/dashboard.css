@@ -399,7 +399,10 @@
   padding: 10px;
   cursor: grab;
   touch-action: none;
+  user-select: none;
 }
+
+.graph-scroll--grabbing { cursor: grabbing; }
 
 .graph-canvas {
   transform-origin: 0 0;
@@ -707,3 +710,252 @@
   .reader-toolbar { margin: 0 -20px 20px; padding: 10px 20px; gap: 10px; }
   .graph-panel { border-right: none; border-bottom: 2px solid var(--gunmetal); }
 }
+
+/* ============================================================
+   USER SELECT
+   ============================================================ */
+
+.user-select-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+.user-select-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid var(--gunmetal);
+  border-radius: 999px;
+  background: var(--creme-100);
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--gunmetal);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.user-select-btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--gunmetal); background: var(--ciano-soft); }
+
+.user-select-avatar,
+.validation-check-avatar,
+.comment-thread-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--ciano);
+  color: var(--gunmetal);
+  border: 1.5px solid var(--gunmetal);
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   ROADMAP HEADER — user badge / validation entry point
+   ============================================================ */
+
+.roadmap-user-controls { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.roadmap-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid var(--gunmetal);
+  border-radius: 999px;
+  background: var(--creme-100);
+  padding: 3px 12px 3px 3px;
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.roadmap-user-badge:hover { background: var(--ciano-soft); }
+
+/* ============================================================
+   VALIDATION
+   ============================================================ */
+
+.validation-panel { max-width: 620px; }
+.validation-panel-doc-btn { border: none; background: none; font: inherit; text-align: left; cursor: pointer; padding: 0; }
+.validation-panel-doc-btn:hover { text-decoration: underline; }
+
+.validation-checks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 18px;
+  flex-wrap: wrap;
+}
+
+.validation-checks-label {
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--gunmetal-700);
+}
+
+.validation-check-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 2px solid var(--gunmetal);
+  border-radius: 999px;
+  background: var(--creme-200);
+  padding: 2px 8px 2px 2px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--ciano-dark);
+}
+.validation-check-btn:disabled { cursor: not-allowed; opacity: 0.65; }
+.validation-check-btn.is-mine:not(:disabled):hover { background: var(--ciano-soft); }
+.validation-check-btn.is-checked { background: var(--ciano-soft); }
+.validation-check-btn.is-checked .validation-check-avatar { background: var(--ciano-dark); color: var(--creme-100); }
+
+/* ============================================================
+   COMMENTS
+   ============================================================ */
+
+.reader-comment-mode-btn {
+  margin-left: auto;
+  border: 2px solid var(--gunmetal);
+  border-radius: 999px;
+  background: var(--creme-100);
+  padding: 5px 14px;
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.reader-comment-mode-btn:hover { background: var(--ciano-soft); }
+.reader-comment-mode-btn.is-active { background: var(--amarelo); }
+
+.reader-text-surface--with-rail { position: relative; padding-right: 56px; }
+
+.comment-highlight {
+  background: var(--amarelo-soft);
+  border-bottom: 2px solid var(--amarelo);
+  cursor: pointer;
+  padding: 0 1px;
+}
+.comment-highlight:hover { background: var(--amarelo); }
+
+.comment-rail {
+  position: absolute;
+  top: 20px;
+  right: 8px;
+  bottom: 20px;
+  width: 34px;
+}
+
+.comment-bubble {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 2px solid var(--gunmetal);
+  background: var(--ciano);
+  color: var(--gunmetal);
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 0 var(--gunmetal);
+}
+.comment-bubble:hover { background: var(--ciano-light); }
+.comment-bubble.is-done { background: var(--creme-200); }
+.comment-bubble-check {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: var(--ciano-dark);
+  color: var(--creme-100);
+  border-radius: 999px;
+  width: 14px;
+  height: 14px;
+  font-size: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 27, 27, 0.45);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.comment-modal,
+.comment-thread-popover {
+  max-width: 480px;
+  width: 100%;
+  padding: 28px 26px;
+  position: relative;
+}
+
+.comment-modal-quote {
+  border-left: 3px solid var(--amarelo);
+  margin: 10px 0 16px;
+  padding: 4px 0 4px 14px;
+  font-style: italic;
+  color: var(--gunmetal-700);
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.comment-modal-textarea { resize: vertical; font-family: inherit; }
+
+.atomica-button-small {
+  border: 2px solid var(--gunmetal);
+  border-radius: 999px;
+  background: var(--ciano);
+  padding: 5px 16px;
+  font-family: "Atomica Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: fit-content;
+}
+.atomica-button-small:hover:not(:disabled) { background: var(--ciano-light); }
+.atomica-button-small:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.comment-thread-list { display: flex; flex-direction: column; gap: 16px; max-height: 50vh; overflow-y: auto; margin-bottom: 16px; }
+
+.comment-thread-row { display: flex; gap: 10px; }
+.comment-thread-row.is-done { opacity: 0.7; }
+.comment-thread-row-body { flex: 1; min-width: 0; }
+
+.comment-thread-row-meta { font-size: 0.75rem; color: var(--gunmetal-700); margin: 2px 0 4px; }
+.comment-thread-row-text { margin: 0 0 6px; line-height: 1.5; white-space: pre-wrap; }
+
+.comment-thread-row-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+
+.comment-thread-action {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ciano-dark);
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+}
+.comment-thread-action:hover { text-decoration: underline; }
+.comment-thread-action--danger { color: var(--vermelho); }
+
+.comment-thread-reply-form { border-top: 2px solid var(--creme-300); padding-top: 14px; }
