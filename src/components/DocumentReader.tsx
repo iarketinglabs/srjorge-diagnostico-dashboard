@@ -18,6 +18,7 @@ import {
   type CommentThreadData,
 } from "../lib/comments";
 import { initials, type UserName } from "../lib/user";
+import { isValidatable } from "../lib/validation";
 import { CommentModal } from "./CommentModal";
 import { CommentThread } from "./CommentThread";
 import { DocValidationChecks } from "./DocValidationChecks";
@@ -258,7 +259,7 @@ export function DocumentReader({
       <h2 className="font-display reader-title">{file.title}</h2>
       {file.status && <p className="reader-status">{file.status}</p>}
       <StatusBadges tags={file.tags} />
-      <DocValidationChecks docPath={file.path} currentUser={currentUser} />
+      {isValidatable(file) && <DocValidationChecks docPath={file.path} currentUser={currentUser} />}
       <div className="reader-text-surface reader-text-surface--with-rail">
         <div className="reader-body" ref={bodyRef} onMouseUp={handleMouseUp}>
           <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={markdownComponents}>

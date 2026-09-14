@@ -12,12 +12,19 @@ export type Validation = {
 
 export type DocStatus = "validado" | "em-progresso" | "pendente";
 
-/** README files and anything under a "Click Up AI (Brain 2)" folder are
- * internal reference material, not client-facing diagnostic content — they
- * are excluded from validation entirely, per the client's request. */
+/** README files, anything under a "Click Up AI (Brain 2)" folder, and the
+ * recurring Lacunas / Roteiro de coleta / Perguntas pendentes working docs
+ * (one per area, e.g. "lacunas.md", "roteiro-coleta-midia.md",
+ * "perguntas-pendentes-gestao-mudanca.md") are internal working material,
+ * not client-facing diagnostic content — excluded from validation entirely,
+ * per the client's request. */
 export function isValidatable(file: ContentFile): boolean {
   if (file.path.includes("Click Up AI (Brain 2)")) return false;
-  if (file.name.toLowerCase() === "readme.md") return false;
+  const name = file.name.toLowerCase();
+  if (name === "readme.md") return false;
+  if (name.startsWith("lacunas")) return false;
+  if (name.startsWith("roteiro-coleta")) return false;
+  if (name.startsWith("perguntas-pendentes")) return false;
   return true;
 }
 
