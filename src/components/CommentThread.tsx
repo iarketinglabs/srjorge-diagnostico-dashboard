@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type { Comment, CommentThreadData } from "../lib/comments";
-import { initials, type UserName } from "../lib/user";
+import { initials, userColor, type UserName } from "../lib/user";
 
 type Props = {
   thread: CommentThreadData;
@@ -37,7 +37,9 @@ function CommentRow({
 
   return (
     <div className={`comment-thread-row ${comment.status === "done" ? "is-done" : ""}`}>
-      <span className="comment-thread-avatar">{initials(comment.author)}</span>
+      <span className="comment-thread-avatar" style={{ background: userColor(comment.author) }}>
+        {initials(comment.author)}
+      </span>
       <div className="comment-thread-row-body">
         <p className="comment-thread-row-meta">
           <strong>{comment.author}</strong> · {formatDate(comment.created_at)}

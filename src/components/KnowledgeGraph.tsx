@@ -168,6 +168,15 @@ export function KnowledgeGraph({ tree, selectedPath, onSelectFile, focusRequest 
   function handlePointerMove(e: PointerEvent<HTMLDivElement>) {
     const d = dragRef.current;
     if (d.pointerId !== e.pointerId) return;
+    // A mouse's pointerId is reused across separate click/drag cycles, so
+    // matching pointerId alone isn't enough — without this check, a single
+    // earlier click leaves dragRef "armed", and any later plain hover
+    // (no button held) reads as an ongoing drag. Bail unless the primary
+    // button is actually currently pressed.
+    if ((e.buttons & 1) !== 1) {
+      dragRef.current.pointerId = -1;
+      return;
+    }
     const dx = e.clientX - d.startClientX;
     const dy = e.clientY - d.startClientY;
     d.distance = Math.max(d.distance, Math.hypot(dx, dy));
@@ -183,6 +192,7 @@ export function KnowledgeGraph({ tree, selectedPath, onSelectFile, focusRequest 
 
   function handlePointerUp(e: PointerEvent<HTMLDivElement>) {
     if (dragRef.current.pointerId !== e.pointerId) return;
+    dragRef.current.pointerId = -1;
     setIsDragging(false);
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   }

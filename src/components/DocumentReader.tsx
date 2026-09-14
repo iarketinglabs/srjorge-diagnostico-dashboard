@@ -17,7 +17,7 @@ import {
   threadOffset,
   type CommentThreadData,
 } from "../lib/comments";
-import { initials, type UserName } from "../lib/user";
+import { initials, userColor, type UserName } from "../lib/user";
 import { isValidatable } from "../lib/validation";
 import { CommentModal } from "./CommentModal";
 import { CommentThread } from "./CommentThread";
@@ -273,7 +273,10 @@ export function DocumentReader({
                 key={thread.root.id}
                 type="button"
                 className={`comment-bubble ${thread.root.status === "done" ? "is-done" : ""}`}
-                style={{ top: `${threadOffset(file.body, thread) * 100}%` }}
+                style={{
+                  top: `${threadOffset(file.body, thread) * 100}%`,
+                  background: thread.root.status === "done" ? undefined : userColor(thread.root.author),
+                }}
                 onClick={() => setOpenThreadId(thread.root.id)}
                 title={`${thread.root.author}: ${thread.root.body}`}
               >

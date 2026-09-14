@@ -24,3 +24,16 @@ export function initials(name: string): string {
     .map((part) => part[0]!.toUpperCase())
     .join("");
 }
+
+// One color per user (the design system's three accent hues), so comment
+// bubbles/avatars are distinguishable by author at a glance without reading
+// the initials.
+const USER_COLORS: Record<UserName, string> = {
+  "Pedro Armbrust": "var(--ciano)",
+  "Leticia Suher": "var(--amarelo)",
+  "Alexandre Duarte": "var(--vermelho-light)",
+};
+
+export function userColor(name: string): string {
+  return USER_COLORS[name as UserName] ?? "var(--ciano)";
+}
