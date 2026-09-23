@@ -48,6 +48,9 @@ function countTags(body) {
   return { factual, hipotese, pendente };
 }
 
+// Working/auxiliary docs kept out of the dashboard UI.
+const HIDDEN_DOC = /^(readme|lacunas?|roteiros?-coletas?|perguntas-pendentes?)([-_.].*)?.md$/i;
+
 function walk(dir, relBase) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
   const node = { name: path.basename(dir), path: slugify(relBase), type: "folder", children: [] };
@@ -57,7 +60,7 @@ function walk(dir, relBase) {
     if (entry.isDirectory()) {
       const child = walk(abs, rel);
       node.children.push(child);
-    } else if (entry.isFile() && entry.name.endsWith(".md")) {
+    } else if (entry.isFile() && entry.name.endsWith(".md") && !HIDDEN_DOC.test(entry.name)) {
       node.children.push({ name: entry.name, path: slugify(rel), type: "file" });
     }
   }
@@ -71,7 +74,7 @@ function collectFiles(dir, relBase, out) {
     const rel = path.join(relBase, entry.name);
     if (entry.isDirectory()) {
       collectFiles(abs, rel, out);
-    } else if (entry.isFile() && entry.name.endsWith(".md")) {
+    } else if (entry.isFile() && entry.name.endsWith(".md") && !HIDDEN_DOC.test(entry.name)) {
       const body = fs.readFileSync(abs, "utf-8");
       const title = extractTitle(body, entry.name.replace(/\.md$/, ""));
       const status = extractStatus(body);
