@@ -49,7 +49,7 @@ function countTags(body) {
 }
 
 // Working/auxiliary docs kept out of the dashboard UI.
-const HIDDEN_DOC = /^(readme|lacunas?|roteiros?-coletas?|perguntas-pendentes?)([-_.].*)?.md$/i;
+const HIDDEN_DOC = /^(readme|lacunas?|roteiros?-coletas?|perguntas-pendentes?)([-_.].*)?.md$|^formulario-(perguntas-lideranca|autoavaliacao-maturidade-ia).md$/i;
 
 function walk(dir, relBase) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
