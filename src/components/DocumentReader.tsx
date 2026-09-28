@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -22,6 +22,10 @@ import { isValidatable } from "../lib/validation";
 import { CommentModal } from "./CommentModal";
 import { CommentThread } from "./CommentThread";
 import { DocValidationChecks } from "./DocValidationChecks";
+import { EditHistoryPanel } from "./EditHistoryPanel";
+import { RevisionConflictError, saveRevision, type Revision } from "../lib/revisions";
+
+const DocumentEditor = lazy(() => import("./DocumentEditor").then((m) => ({ default: m.DocumentEditor })));
 
 type Props = {
   file: ContentFile | null;
@@ -33,6 +37,10 @@ type Props = {
   onBack: () => void;
   onForward: () => void;
   currentUser: UserName | null;
+  /** Body as published in data.enc, before any in-site edits. */
+  originalBody: string;
+  latestRevision: Revision | null;
+  onRevisionSaved: (rev: Revision) => void;
 };
 
 function StatusBadges({ tags }: { tags: ContentFile["tags"] }) {
@@ -104,6 +112,9 @@ export function DocumentReader({
   onBack,
   onForward,
   currentUser,
+  originalBody,
+  latestRevision,
+  onRevisionSaved,
 }: Props) {
   const pathIndex = useMemo(() => buildPathIndex(allFiles), [allFiles]);
 
@@ -112,6 +123,9 @@ export function DocumentReader({
   const [pendingQuote, setPendingQuote] = useState<{ exact: string; prefix: string; suffix: string } | null>(null);
   const [openThreadId, setOpenThreadId] = useState<string | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const [editing, setEditing] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyRefresh, setHistoryRefresh] = useState(0);
 
   const docPath = file?.path ?? null;
 
@@ -119,6 +133,8 @@ export function DocumentReader({
     setThreads([]);
     setOpenThreadId(null);
     setPendingQuote(null);
+    setEditing(false);
+    setHistoryOpen(false);
     if (!docPath) return;
     let cancelled = false;
     fetchComments(docPath)
@@ -157,6 +173,34 @@ export function DocumentReader({
     setPendingQuote(null);
     window.getSelection()?.removeAllRanges();
     refreshComments();
+  }
+
+  async function persistRevision(after: string, summaryPrefix?: string) {
+    if (!file || !currentUser) return;
+    if (after === file.body) return;
+    try {
+      const rev = await saveRevision({
+        docPath: file.path,
+        author: currentUser,
+        before: file.body,
+        after,
+        baseRevisionId: latestRevision?.id ?? null,
+        summaryPrefix,
+      });
+      onRevisionSaved(rev);
+      setHistoryRefresh((n) => n + 1);
+    } catch (err) {
+      if (err instanceof RevisionConflictError) {
+        onRevisionSaved(err.latest);
+        throw new Error(`${err.message} Revise o histórico; se salvar de novo, sua versão substitui a dele (as duas ficam registradas).`);
+      }
+      throw err;
+    }
+  }
+
+  async function handleSaveEdit(markdown: string) {
+    await persistRevision(markdown);
+    setEditing(false);
   }
 
   const openThread = threads.find((t) => t.root.id === openThreadId) ?? null;
@@ -228,7 +272,23 @@ export function DocumentReader({
         </button>
       </div>
       {file && <Breadcrumbs path={file.path} title={file.title} onFocusFolder={onFocusFolder} onNavigate={onNavigate} />}
-      {file && currentUser && (
+      {file && (
+        <div className="reader-toolbar-actions">
+          <button type="button" className="reader-comment-mode-btn" onClick={() => setHistoryOpen(true)} title="Histórico de edições">
+            🕘 Histórico de edições
+          </button>
+          {currentUser && (
+            <button
+              type="button"
+              className={`reader-comment-mode-btn ${editing ? "is-active" : ""}`}
+              onClick={() => setEditing((v) => !v)}
+            >
+              {editing ? "Editando…" : "✎ Editar"}
+            </button>
+          )}
+        </div>
+      )}
+      {file && currentUser && !editing && (
         <button
           type="button"
           className={`reader-comment-mode-btn ${commentMode ? "is-active" : ""}`}
@@ -259,7 +319,18 @@ export function DocumentReader({
       <h2 className="font-display reader-title">{file.title}</h2>
       {file.status && <p className="reader-status">{file.status}</p>}
       <StatusBadges tags={file.tags} />
+      {latestRevision && (
+        <p className="reader-edited-note">
+          Editado por {latestRevision.author} em{" "}
+          {new Date(latestRevision.created_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}
+        </p>
+      )}
       {isValidatable(file) && <DocValidationChecks docPath={file.path} currentUser={currentUser} />}
+      {editing ? (
+        <Suspense fallback={<p className="edit-history-empty">Carregando editor…</p>}>
+          <DocumentEditor key={file.path} initialMarkdown={file.body} onSave={handleSaveEdit} onCancel={() => setEditing(false)} />
+        </Suspense>
+      ) : (
       <div className="reader-text-surface reader-text-surface--with-rail">
         <div className="reader-body" ref={bodyRef} onMouseUp={handleMouseUp}>
           <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={markdownComponents}>
@@ -287,6 +358,24 @@ export function DocumentReader({
           </aside>
         )}
       </div>
+      )}
+      {historyOpen && (
+        <EditHistoryPanel
+          docPath={file.path}
+          docTitle={file.title}
+          originalBody={originalBody}
+          currentUser={currentUser}
+          refreshKey={historyRefresh}
+          onClose={() => setHistoryOpen(false)}
+          onRestore={async (body, label) => {
+            try {
+              await persistRevision(body, `Restauração de ${label} · `);
+            } catch (err) {
+              window.alert(err instanceof Error ? err.message : "Falha ao restaurar.");
+            }
+          }}
+        />
+      )}
       {pendingQuote && currentUser && (
         <CommentModal quote={pendingQuote.exact} onCancel={() => setPendingQuote(null)} onSubmit={handleCreateComment} />
       )}

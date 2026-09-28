@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PasswordGate, tryAutoUnlock } from "./components/PasswordGate";
 import { RoadmapHeader } from "./components/RoadmapHeader";
 import { KnowledgeGraph, type FocusRequest } from "./components/KnowledgeGraph";
@@ -8,6 +8,7 @@ import { ResizableSplit } from "./components/ResizableSplit";
 import { UserSelect } from "./components/UserSelect";
 import type { DashboardContent } from "./lib/decrypt";
 import { clearCurrentUser, getCurrentUser, type UserName } from "./lib/user";
+import { fetchLatestRevisions, type Revision } from "./lib/revisions";
 
 export default function App() {
   const [content, setContent] = useState<DashboardContent | null>(null);
@@ -21,6 +22,28 @@ export default function App() {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
+
+  // Edições feitas no site (Supabase) sobrepõem o body publicado no data.enc.
+  const [latestRevisions, setLatestRevisions] = useState<Map<string, Revision>>(new Map());
+
+  useEffect(() => {
+    if (!content) return;
+    fetchLatestRevisions()
+      .then(setLatestRevisions)
+      .catch(() => setLatestRevisions(new Map()));
+  }, [content]);
+
+  const files = useMemo(() => {
+    if (!content) return [];
+    return content.docs.files.map((f) => {
+      const rev = latestRevisions.get(f.path);
+      return rev ? { ...f, body: rev.body_after } : f;
+    });
+  }, [content, latestRevisions]);
+
+  function handleRevisionSaved(rev: Revision) {
+    setLatestRevisions((prev) => new Map(prev).set(rev.doc_path, rev));
+  }
 
   useEffect(() => {
     void tryAutoUnlock().then((c) => {
@@ -84,7 +107,8 @@ export default function App() {
   }
 
   const currentPath = historyIndex >= 0 ? history[historyIndex] : null;
-  const selectedFile = currentPath ? content.docs.files.find((f) => f.path === currentPath) ?? null : null;
+  const selectedFile = currentPath ? files.find((f) => f.path === currentPath) ?? null : null;
+  const originalFile = currentPath ? content.docs.files.find((f) => f.path === currentPath) ?? null : null;
 
   return (
     <div className="page-shell">
@@ -98,7 +122,7 @@ export default function App() {
             clearCurrentUser();
             setCurrentUserState(null);
           }}
-          files={content.docs.files}
+          files={files}
           onNavigate={navigate}
         />
         <main className="dashboard-body">
@@ -114,7 +138,10 @@ export default function App() {
             right={
               <DocumentReader
                 file={selectedFile}
-                allFiles={content.docs.files}
+                allFiles={files}
+                originalBody={originalFile?.body ?? ""}
+                latestRevision={selectedFile ? latestRevisions.get(selectedFile.path) ?? null : null}
+                onRevisionSaved={handleRevisionSaved}
                 onNavigate={navigate}
                 onFocusFolder={focusFolder}
                 canGoBack={historyIndex > 0}
