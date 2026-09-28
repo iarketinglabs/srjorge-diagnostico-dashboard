@@ -1,6 +1,7 @@
 import type { ContentFile } from "./decrypt";
 import { supabaseSelect, supabaseUpsert } from "./supabaseClient";
 import { USERS, type UserName } from "./user";
+import { isValidationEligible } from "./validationEligibility";
 
 export type Validation = {
   id: string;
@@ -12,21 +13,9 @@ export type Validation = {
 
 export type DocStatus = "validado" | "em-progresso" | "pendente";
 
-/** README files, anything under a "Click Up AI (Brain 2)" folder, and the
- * recurring Lacunas / Roteiro de coleta / Perguntas pendentes working docs
- * (one per area, e.g. "lacunas.md", "roteiro-coleta-midia.md",
- * "perguntas-pendentes-gestao-mudanca.md") are internal working material,
- * not client-facing diagnostic content — excluded from validation entirely,
- * per the client's request. */
-export function isValidatable(file: ContentFile): boolean {
-  if (file.path.includes("Click Up AI (Brain 2)")) return false;
-  const name = file.name.toLowerCase();
-  if (name === "readme.md") return false;
-  if (name.startsWith("lacunas")) return false;
-  if (name.startsWith("roteiro-coleta")) return false;
-  if (name.startsWith("perguntas-pendentes")) return false;
-  return true;
-}
+/** Eligibility is narrower than graph visibility: working/index documents
+ * remain readable in the knowledge base while staying out of validation. */
+export const isValidatable = (file: ContentFile): boolean => isValidationEligible(file);
 
 export function computeDocStatus(checks: Validation[]): DocStatus {
   const checkedCount = new Set(checks.filter((c) => c.checked).map((c) => c.user_name)).size;

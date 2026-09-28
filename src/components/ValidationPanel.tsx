@@ -60,8 +60,8 @@ export function ValidationPanel({ files, onNavigate, onClose }: Props) {
         <p className="eyebrow">Progresso de validação</p>
         <h2 className="font-display roadmap-drawer-title">Documentos</h2>
         <p className="roadmap-drawer-copy">
-          Um documento fica 100% validado quando Pedro, Leticia e Alexandre marcam o check. READMEs e conteúdo de
-          "Click Up AI (Brain 2)" não entram nesta contagem.
+          Um documento fica 100% validado quando Pedro, Leticia e Alexandre marcam o check. Documentos auxiliares,
+          índices e conteúdos de AIOS continuam acessíveis na base, mas não entram nesta contagem.
         </p>
         {validations === null ? (
           <p className="roadmap-drawer-copy">Carregando…</p>

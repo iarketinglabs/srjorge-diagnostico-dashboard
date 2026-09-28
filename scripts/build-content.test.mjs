@@ -13,7 +13,7 @@ function flattenTree(node) {
   return [node.path, ...(node.children ?? []).flatMap(flattenTree)];
 }
 
-test("excludes validation-progress indexes and the complete AIOS subtree", () => {
+test("keeps validation-ineligible documents available to the knowledge graph", () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "srjorge-dashboard-content-"));
   const sourceDir = path.join(tempDir, "diagnostico");
   const outputFile = path.join(tempDir, "content.json");
@@ -39,8 +39,15 @@ test("excludes validation-progress indexes and the complete AIOS subtree", () =>
     const filePaths = content.docs.files.map((file) => file.path);
     const treePaths = flattenTree(content.docs.tree);
 
-    assert.deepEqual(filePaths, ["Operacoes/processo.md"]);
-    assert.equal(treePaths.some((entry) => entry === "AIOS" || entry.startsWith("AIOS/")), false);
+    assert.deepEqual(filePaths, [
+      "AIOS/nested/detalhe.md",
+      "AIOS/roadmap.md",
+      "indice-entregaveis.md",
+      "Operacoes/matriz-evidencias.md",
+      "Operacoes/processo.md",
+      "registro-atualizacoes.md",
+    ]);
+    assert.equal(treePaths.some((entry) => entry === "AIOS"), true);
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
