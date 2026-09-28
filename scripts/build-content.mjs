@@ -49,7 +49,8 @@ function countTags(body) {
 }
 
 // Working/auxiliary docs kept out of the dashboard UI.
-const HIDDEN_DOC = /^(readme|lacunas?|roteiros?-coletas?|perguntas-pendentes?)([-_.].*)?.md$|^formulario-(perguntas-lideranca|autoavaliacao-maturidade-ia).md$|^apresentacao-executiva-alinhamento.md$/i;
+const HIDDEN_DIR = /^AIOS$/i;
+const HIDDEN_DOC = /^(readme|lacunas?|roteiros?-coletas?|perguntas-pendentes?)([-_.].*)?.md$|^(indice-entregaveis|matriz-evidencias|registro-atualizacoes|formulario-(perguntas-lideranca|autoavaliacao-maturidade-ia)|apresentacao-executiva-alinhamento).md$/i;
 
 function walk(dir, relBase) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
@@ -57,7 +58,7 @@ function walk(dir, relBase) {
   for (const entry of entries) {
     const abs = path.join(dir, entry.name);
     const rel = path.join(relBase, entry.name);
-    if (entry.isDirectory()) {
+    if (entry.isDirectory() && !HIDDEN_DIR.test(entry.name)) {
       const child = walk(abs, rel);
       node.children.push(child);
     } else if (entry.isFile() && entry.name.endsWith(".md") && !HIDDEN_DOC.test(entry.name)) {
@@ -72,7 +73,7 @@ function collectFiles(dir, relBase, out) {
   for (const entry of entries) {
     const abs = path.join(dir, entry.name);
     const rel = path.join(relBase, entry.name);
-    if (entry.isDirectory()) {
+    if (entry.isDirectory() && !HIDDEN_DIR.test(entry.name)) {
       collectFiles(abs, rel, out);
     } else if (entry.isFile() && entry.name.endsWith(".md") && !HIDDEN_DOC.test(entry.name)) {
       const body = fs.readFileSync(abs, "utf-8");
