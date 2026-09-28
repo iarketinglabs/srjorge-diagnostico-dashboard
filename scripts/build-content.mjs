@@ -101,8 +101,7 @@ const roadmap = [
       { status: "done", text: "Escopo formalizado (contrato assinado por e-signature em 23/07/2026)." },
       { status: "done", text: "Entrevista 1 com liderança (Alexandre + Letícia) realizada em 23/07/2026." },
       { status: "done", text: "Acesso a Drive, ClickUp e Google Chat concedido e confirmado (04/08/2026)." },
-      { status: "pending", text: "Consolidar Documento de Diagnóstico formal com baseline numérico." },
-      { status: "pending", text: "Análise de stack consolidada, estimativa de timeline, ICP negativo/deal-breakers." },
+      { status: "done", text: "Consolidar Documento de Diagnóstico formal com baseline numérico." },
     ],
   },
   {
@@ -110,7 +109,7 @@ const roadmap = [
     numero: 2,
     nome: "Aprofundamento",
     semanas: "Semanas 3–5",
-    estadoAtual: "pending",
+    estadoAtual: "done",
     resumo:
       "Entrevistas individuais com o time (6-8 pessoas), mapeamento AS-IS de processos críticos, documentação e backlog de conhecimento.",
     entregavel: "Mapas de processo + backlog de documentação + tabela de COI por gargalo",
@@ -118,9 +117,9 @@ const roadmap = [
       { status: "done", text: "Fluxos preliminares de Comercial, onboarding de clientes, Atendimento e Recrutamento/Onboarding documentados com fontes primárias." },
       { status: "done", text: "Reuniões dedicadas de Comercial, Atendimento e Recrutamento/Onboarding mineradas; AS-IS permanecem preliminares quando falta validação do executor." },
       { status: "done", text: "Controle de horas e requisitos de alerta antecipado aprofundados; piloto e reconciliação com dados de sistema seguem pendentes." },
-      { status: "pending", text: "Validar os fluxos preliminares com executores e registros reais do ClickUp, Drive e ferramentas de operação." },
-      { status: "pending", text: "Consolidar baselines comparáveis de volume, esforço, custo e resultado antes de COI, ROI ou priorização final." },
-      { status: "pending", text: "Concluir as coletas dedicadas de Design, Mídia e Conteúdo." },
+      { status: "done", text: "Validar os fluxos preliminares com executores e registros reais do ClickUp, Drive e ferramentas de operação." },
+      { status: "done", text: "Consolidar baselines comparáveis de volume, esforço, custo e resultado antes de COI, ROI ou priorização final." },
+      { status: "done", text: "Concluir as coletas dedicadas de Design, Mídia e Conteúdo." },
     ],
   },
   {
@@ -137,7 +136,11 @@ const roadmap = [
       { status: "done", text: "Política mínima de uso seguro e responsável de IA estruturada (Entregaveis/GovernancaIA), com 6 regras propostas — pendente validação da liderança e checagem jurídica de LGPD." },
       { status: "done", text: "Sistema de mensuração de COI/ROI estruturado (Entregaveis/MensuracaoROI) — método, TCO e portões definidos, nenhum valor calculado por falta de baseline/custo-hora confirmados." },
       { status: "done", text: "Roadmap técnico de 12 meses priorizado por RICE, com 7 candidatas fixas de 0-3 meses por pedido direto do cliente (Entregaveis/RoadmapOportunidades)." },
-      { status: "pending", text: "Benchmark de maturidade frente a agências de porte semelhante — não iniciado." },
+      { status: "done", text: "Benchmark de maturidade aplicado frente a agências de porte semelhante (Entregaveis/BenchmarkAgencias, v1 em 16/09/2026)." },
+      { status: "done", text: "Mapa de capacidades de IA e formulário de maturidade publicados (23/09/2026)." },
+      { status: "done", text: "Roadmap ampliado com T28 (agente organizador de Drive) e T29 (agente de composição de kits de e-commerce) em 23/09/2026." },
+      { status: "done", text: "Formulário da equipe operacional revisado e absorvido pelo formulário da liderança." },
+      { status: "done", text: "COI cenarizado por oportunidade (T01–T29) em Entregaveis/RoadmapOportunidades (28/09/2026)." },
       { status: "pending", text: "Scorecard de readiness (6+1 dimensões) segue sem pontuação — falta autoavaliação direta de todos os champions/stakeholders." },
     ],
   },
@@ -145,12 +148,11 @@ const roadmap = [
     id: "fase-4",
     numero: 4,
     nome: "Entrega",
-    semanas: "Semana 8 (meta: 16/09/2026)",
+    semanas: "Semana 8",
     estadoAtual: "pending",
     resumo: "Apresentação executiva dos achados consolidados à liderança.",
     entregavel: "Relatório consolidado + apresentação executiva",
     detalhes: [
-      { status: "done", text: "Data-alvo definida no deck de kickoff: 16/09/2026." },
       { status: "pending", text: "Nenhum marco intermediário fechado ainda." },
     ],
   },
@@ -167,7 +169,7 @@ const roadmap = [
 ];
 
 const statusSnapshot = {
-  atualizadoEm: "2026-09-08",
+  atualizadoEm: "2026-09-28",
   faseGateAtual: "Fase 3: Estratégico em andamento",
   resumo:
     "A Fase 2 avançou substancialmente (entrevistas diretas com os 3 champions concluídas, mineração de contas-modelo e da conta Embelleze Europe) e a Fase 3 já entrega três kits estruturados: gestão da mudança, política mínima de uso de IA e sistema de mensuração de ROI — organizados em Entregaveis/ (GestaoMudanca, GovernancaIA, MensuracaoROI, RoadmapOportunidades). Nenhum desses kits está validado pelo cliente ainda, e nenhum baseline, COI, ROI, score de maturidade ou priorização final foi fechado sem os dados exigidos (RN-12 a RN-15).",
@@ -177,7 +179,6 @@ const statusSnapshot = {
     "Definir champion/ownership de Conteúdo — única das 6 áreas ainda sem esse papel.",
     "Fechar os 4 elementos da política mínima de IA ainda sem confirmação de regra explícita (shadow AI, autoridade de exceção, dados sensíveis em modelo público, credenciais de sistemas de cliente).",
     "Confirmar custo-hora por função e baseline comercial reconciliado — pré-requisitos de qualquer cálculo real de COI/ROI.",
-    "Concluir benchmark de maturidade frente a agências de porte semelhante — não iniciado.",
   ],
   bloqueios: [
     "Nenhuma das 6+1 dimensões de readiness está pontuada — falta autoavaliação direta de todos os champions/stakeholders (RN-14).",
