@@ -1,3 +1,5 @@
+import { createEncryptedPayloadRequest } from "./contentRequest";
+
 export type ContentFile = {
   path: string;
   name: string;
@@ -89,7 +91,7 @@ export async function decryptContent(password: string, payload: EncryptedPayload
 }
 
 export async function fetchEncryptedPayload(): Promise<EncryptedPayload> {
-  const res = await fetch(`${import.meta.env.BASE_URL}data.enc`);
+  const res = await fetch(createEncryptedPayloadRequest(import.meta.env.BASE_URL));
   if (!res.ok) throw new Error("Não foi possível carregar os dados.");
   return res.json();
 }
