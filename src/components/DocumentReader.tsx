@@ -23,6 +23,7 @@ import { CommentModal } from "./CommentModal";
 import { CommentThread } from "./CommentThread";
 import { DocValidationChecks } from "./DocValidationChecks";
 import { EditHistoryPanel } from "./EditHistoryPanel";
+import { confirmDiscardEdits } from "../lib/editGuard";
 import { RevisionConflictError, saveRevision, type Revision } from "../lib/revisions";
 
 const DocumentEditor = lazy(() => import("./DocumentEditor").then((m) => ({ default: m.DocumentEditor })));
@@ -175,7 +176,7 @@ export function DocumentReader({
     refreshComments();
   }
 
-  async function persistRevision(after: string, summaryPrefix?: string) {
+  async function persistRevision(after: string, opts: { summaryPrefix?: string; beforeNormalized?: string } = {}) {
     if (!file || !currentUser) return;
     if (after === file.body) return;
     try {
@@ -183,9 +184,10 @@ export function DocumentReader({
         docPath: file.path,
         author: currentUser,
         before: file.body,
+        beforeNormalized: opts.beforeNormalized,
         after,
         baseRevisionId: latestRevision?.id ?? null,
-        summaryPrefix,
+        summaryPrefix: opts.summaryPrefix,
       });
       onRevisionSaved(rev);
       setHistoryRefresh((n) => n + 1);
@@ -198,10 +200,28 @@ export function DocumentReader({
     }
   }
 
-  async function handleSaveEdit(markdown: string) {
-    await persistRevision(markdown);
+  async function handleSaveEdit(markdown: string, baseline: string) {
+    if (!file) return;
+    // Comentários cujo trecho existia e deixará de existir após a edição.
+    const losing = threads.filter((t) => file.body.includes(t.root.quote_exact) && !markdown.includes(t.root.quote_exact));
+    if (
+      losing.length > 0 &&
+      !window.confirm(
+        `${losing.length} comentário${losing.length > 1 ? "s ficarão" : " ficará"} sem o trecho marcado no texto ` +
+          `(continuam acessíveis em "Comentários de trechos alterados"). Salvar mesmo assim?`
+      )
+    )
+      return;
+    await persistRevision(markdown, { beforeNormalized: baseline });
     setEditing(false);
   }
+
+  // Só conta como "trecho alterado" o que existia na versão publicada e sumiu
+  // com as edições — citações que nunca casaram com o markdown bruto (seleção
+  // atravessando formatação) seguem só na barra lateral, como antes.
+  const orphanThreads = file
+    ? threads.filter((t) => originalBody.includes(t.root.quote_exact) && !file.body.includes(t.root.quote_exact))
+    : [];
 
   const openThread = threads.find((t) => t.root.id === openThreadId) ?? null;
 
@@ -281,9 +301,12 @@ export function DocumentReader({
             <button
               type="button"
               className={`reader-comment-mode-btn ${editing ? "is-active" : ""}`}
-              onClick={() => setEditing((v) => !v)}
+              onClick={() => {
+                if (!editing) setEditing(true);
+                else if (confirmDiscardEdits()) setEditing(false);
+              }}
             >
-              {editing ? "Editando…" : "✎ Editar"}
+              {editing ? "Sair da edição" : "✎ Editar"}
             </button>
           )}
         </div>
@@ -313,8 +336,14 @@ export function DocumentReader({
   }
 
   return (
-    <div className="reader-panel">
+    <div className={`reader-panel ${editing ? "is-editing" : ""}`}>
       {toolbar}
+      {editing && (
+        <p className="reader-editing-title">
+          Editando <strong>{file.title}</strong> como {currentUser}
+        </p>
+      )}
+      <div className="reader-doc-header">
       <p className="eyebrow">{file.path}</p>
       <h2 className="font-display reader-title">{file.title}</h2>
       {file.status && <p className="reader-status">{file.status}</p>}
@@ -326,6 +355,7 @@ export function DocumentReader({
         </p>
       )}
       {isValidatable(file) && <DocValidationChecks docPath={file.path} currentUser={currentUser} />}
+      </div>
       {editing ? (
         <Suspense fallback={<p className="edit-history-empty">Carregando editor…</p>}>
           <DocumentEditor key={file.path} initialMarkdown={file.body} onSave={handleSaveEdit} onCancel={() => setEditing(false)} />
@@ -359,6 +389,25 @@ export function DocumentReader({
         )}
       </div>
       )}
+      {!editing && orphanThreads.length > 0 && (
+        <section className="orphan-comments" aria-label="Comentários de trechos alterados">
+          <p className="eyebrow">Comentários de trechos alterados</p>
+          <ul>
+            {orphanThreads.map((t) => (
+              <li key={t.root.id}>
+                <button type="button" className="orphan-comment-btn" onClick={() => setOpenThreadId(t.root.id)}>
+                  <span className="comment-thread-avatar" style={{ background: userColor(t.root.author) }}>
+                    {initials(t.root.author)}
+                  </span>
+                  <span>
+                    <em>"{t.root.quote_exact.slice(0, 90)}{t.root.quote_exact.length > 90 ? "…" : ""}"</em> — {t.root.body.slice(0, 80)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       {historyOpen && (
         <EditHistoryPanel
           docPath={file.path}
@@ -369,7 +418,7 @@ export function DocumentReader({
           onClose={() => setHistoryOpen(false)}
           onRestore={async (body, label) => {
             try {
-              await persistRevision(body, `Restauração de ${label} · `);
+              await persistRevision(body, { summaryPrefix: `Restauração de ${label} · ` });
             } catch (err) {
               window.alert(err instanceof Error ? err.message : "Falha ao restaurar.");
             }

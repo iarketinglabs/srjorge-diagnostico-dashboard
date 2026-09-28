@@ -65,6 +65,7 @@ export function EditHistoryPanel({ docPath, docTitle, originalBody, currentUser,
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [fullDiff, setFullDiff] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -115,7 +116,9 @@ export function EditHistoryPanel({ docPath, docTitle, originalBody, currentUser,
                       {initials(rev.author)}
                     </span>
                     <span className="edit-history-item-meta">
-                      <strong>{rev.author}</strong>
+                      <strong>
+                        {rev.author} <span className="edit-history-declared">(autor declarado)</span>
+                      </strong>
                       <span>{formatDateTime(rev.created_at)}</span>
                       <span className="edit-history-summary">
                         #{revisions.length - idx} · {rev.summary}
@@ -126,7 +129,18 @@ export function EditHistoryPanel({ docPath, docTitle, originalBody, currentUser,
                   </button>
                   {isOpen && (
                     <div className="edit-history-item-body">
-                      <DiffView before={rev.body_before} after={rev.body_after} />
+                      <DiffView before={fullDiff ? rev.body_before : rev.body_before_normalized ?? rev.body_before} after={rev.body_after} />
+                      {rev.body_before_normalized !== null && rev.body_before_normalized !== rev.body_before && (
+                        <label className="edit-history-toggle">
+                          <input type="checkbox" checked={fullDiff} onChange={(e) => setFullDiff(e.target.checked)} />
+                          Ver diff completo (inclui ajustes automáticos de formatação do editor)
+                        </label>
+                      )}
+                      {rev.client_info && (
+                        <p className="edit-history-device">
+                          Dispositivo {rev.client_info.device.slice(0, 8)} · {rev.client_info.ua}
+                        </p>
+                      )}
                       {currentUser && !isCurrent && (
                         <button
                           type="button"

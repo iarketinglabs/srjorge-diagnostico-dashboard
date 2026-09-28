@@ -18,6 +18,19 @@ git push
 
 O push para `main` dispara o deploy automático (GitHub Actions → GitHub Pages).
 
+## Edições feitas no site
+
+Documentos podem ser editados no próprio dashboard (botão **✎ Editar**). Cada edição é gravada cifrada, com a senha do dashboard, na tabela append-only `srjorge_doc_revisions` do Supabase, e aparece em **🕘 Histórico de edições**. As edições são aplicadas por cima do `data.enc`.
+
+Para levar as edições de volta aos `.md` de origem:
+
+```bash
+DASHBOARD_PASSWORD="..." node scripts/export-revisions.mjs --src "<SrJorge>/executions/src/diagnostico" --dry-run  # confere
+DASHBOARD_PASSWORD="..." node scripts/export-revisions.mjs --src "<SrJorge>/executions/src/diagnostico"
+```
+
+Depois, faça commit no repositório SrJorge e regenere o conteúdo como na seção anterior.
+
 ## Desenvolvimento local
 
 ```bash

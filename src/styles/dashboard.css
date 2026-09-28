@@ -1065,3 +1065,28 @@ div.edit-history-item-head { cursor: default; }
 .edit-history-diff-row.is-del { background: #fde6e6; }
 .edit-history-diff-row ins { background: #a8e6b8; text-decoration: none; }
 .edit-history-diff-row del { background: #f5b3b3; }
+
+/* ── modo edição: só o texto rola; barra de formatação + ações sempre visíveis ── */
+
+.reader-panel.is-editing { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0; }
+.reader-panel.is-editing > .reader-toolbar { position: static; margin-bottom: 10px; flex: none; }
+.reader-panel.is-editing .reader-doc-header { display: none; }
+.reader-editing-title { margin: 0 0 8px; font-size: 0.85rem; color: var(--gunmetal-700); flex: none; }
+
+.reader-panel.is-editing .doc-editor { flex: 1; min-height: 0; }
+.reader-panel.is-editing .doc-editor-toolbar { position: static; flex: none; }
+.doc-editor-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 40px; }
+
+.doc-editor-toolbar .doc-editor-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.doc-editor-toolbar .doc-editor-error { flex-basis: 100%; }
+.doc-editor-state { font-size: 0.72rem; color: var(--gunmetal-700); }
+.doc-editor-state.is-dirty { color: var(--vermelho); font-weight: 700; }
+
+.edit-history-declared { font-weight: 400; font-size: 0.7rem; color: var(--gunmetal-700); }
+.edit-history-toggle { display: flex; gap: 6px; align-items: center; font-size: 0.75rem; cursor: pointer; }
+.edit-history-device { margin: 0; font-size: 0.68rem; color: var(--gunmetal-700); word-break: break-word; }
+
+.orphan-comments { margin-top: 24px; padding: 14px 16px; border: 2px dashed var(--amarelo); border-radius: 12px; }
+.orphan-comments ul { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.orphan-comment-btn { display: flex; gap: 10px; align-items: center; width: 100%; border: none; background: none; font: inherit; font-size: 0.8rem; text-align: left; cursor: pointer; padding: 4px; border-radius: 8px; }
+.orphan-comment-btn:hover { background: var(--amarelo-soft); }
