@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorContent, useEditor, useEditorState, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 import { Markdown } from "@tiptap/markdown";
+import { confirmDiscardEdits, setUnsavedEdits } from "../lib/editGuard";
 
 type Props = {
   initialMarkdown: string;
-  onSave: (markdown: string) => Promise<void>;
+  /** baseline = initialMarkdown como o editor o serializa sem nenhuma mudança
+   * do autor; usado para que o diff não atribua a normalização a ninguém. */
+  onSave: (markdown: string, baseline: string) => Promise<void>;
   onCancel: () => void;
 };
+
 
 type ToolButton = {
   label: string;
@@ -68,6 +72,7 @@ const GROUPS: ToolButton[][] = [
 export function DocumentEditor({ initialMarkdown, onSave, onCancel }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const baselineRef = useRef<string | null>(null);
 
   const editor = useEditor({
     extensions: [
@@ -80,7 +85,26 @@ export function DocumentEditor({ initialMarkdown, onSave, onCancel }: Props) {
     ],
     content: initialMarkdown,
     contentType: "markdown",
+    onCreate: ({ editor: e }) => {
+      baselineRef.current = e.getMarkdown();
+    },
   });
+
+  const dirty =
+    useEditorState({
+      editor,
+      selector: ({ editor: e }) => !!e && baselineRef.current !== null && e.getMarkdown() !== baselineRef.current,
+    }) ?? false;
+
+  useEffect(() => {
+    setUnsavedEdits(dirty);
+    if (!dirty) return;
+    const onBeforeUnload = (ev: BeforeUnloadEvent) => ev.preventDefault();
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty]);
+
+  useEffect(() => () => setUnsavedEdits(false), []);
 
   // Re-render the toolbar on selection/content changes so active states stay in sync.
   const activeStates = useEditorState({
@@ -88,18 +112,38 @@ export function DocumentEditor({ initialMarkdown, onSave, onCancel }: Props) {
     selector: ({ editor: e }) => GROUPS.flat().map((b) => (e && b.active ? b.active(e) : false)),
   });
 
+  function handleCancel() {
+    if (confirmDiscardEdits()) onCancel();
+  }
+
   async function handleSave() {
-    if (!editor || saving) return;
+    if (!editor || saving || !dirty) return;
     setSaving(true);
     setError(null);
     try {
-      await onSave(editor.getMarkdown());
+      await onSave(editor.getMarkdown(), baselineRef.current ?? initialMarkdown);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao salvar.");
     } finally {
       setSaving(false);
     }
   }
+
+  // Ctrl/Cmd+S salva, Esc pergunta se descarta — refs evitam re-registrar a cada tecla.
+  const handlersRef = useRef({ handleSave, handleCancel });
+  handlersRef.current = { handleSave, handleCancel };
+  useEffect(() => {
+    function onKey(ev: KeyboardEvent) {
+      if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "s") {
+        ev.preventDefault();
+        void handlersRef.current.handleSave();
+      } else if (ev.key === "Escape") {
+        handlersRef.current.handleCancel();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   let flatIndex = 0;
   return (
@@ -127,18 +171,21 @@ export function DocumentEditor({ initialMarkdown, onSave, onCancel }: Props) {
             })}
           </div>
         ))}
+        <div className="doc-editor-actions">
+          <span className={`doc-editor-state ${dirty ? "is-dirty" : ""}`}>{dirty ? "● Alterações não salvas" : "Sem alterações"}</span>
+          <button type="button" className="comment-thread-action" onClick={handleCancel} disabled={saving} title="Descartar (Esc)">
+            Descartar
+          </button>
+          <button type="button" className="atomica-button-small" onClick={handleSave} disabled={saving || !editor || !dirty} title="Salvar (Ctrl+S)">
+            {saving ? "Salvando…" : "Salvar edição"}
+          </button>
+        </div>
+        {error && <p className="doc-editor-error">{error}</p>}
       </div>
-      <div className="reader-text-surface">
-        <EditorContent editor={editor} className="reader-body doc-editor-content" />
-      </div>
-      {error && <p className="doc-editor-error">{error}</p>}
-      <div className="doc-editor-actions">
-        <button type="button" className="atomica-button-small" onClick={handleSave} disabled={saving || !editor}>
-          {saving ? "Salvando…" : "Salvar edição"}
-        </button>
-        <button type="button" className="comment-thread-action" onClick={onCancel} disabled={saving}>
-          Cancelar
-        </button>
+      <div className="doc-editor-scroll">
+        <div className="reader-text-surface">
+          <EditorContent editor={editor} className="reader-body doc-editor-content" />
+        </div>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { ResizableSplit } from "./components/ResizableSplit";
 import { UserSelect } from "./components/UserSelect";
 import type { DashboardContent } from "./lib/decrypt";
 import { clearCurrentUser, getCurrentUser, type UserName } from "./lib/user";
+import { confirmDiscardEdits } from "./lib/editGuard";
 import { fetchLatestRevisions, type Revision } from "./lib/revisions";
 
 export default function App() {
@@ -53,6 +54,7 @@ export default function App() {
   }, []);
 
   function navigate(path: string) {
+    if (history[historyIndex] !== path && !confirmDiscardEdits()) return;
     if (history[historyIndex] !== path) {
       const truncated = history.slice(0, historyIndex + 1);
       truncated.push(path);
@@ -63,14 +65,14 @@ export default function App() {
   }
 
   function goBack() {
-    if (historyIndex <= 0) return;
+    if (historyIndex <= 0 || !confirmDiscardEdits()) return;
     const nextIndex = historyIndex - 1;
     setHistoryIndex(nextIndex);
     setFocusRequest({ path: history[nextIndex] });
   }
 
   function goForward() {
-    if (historyIndex >= history.length - 1) return;
+    if (historyIndex >= history.length - 1 || !confirmDiscardEdits()) return;
     const nextIndex = historyIndex + 1;
     setHistoryIndex(nextIndex);
     setFocusRequest({ path: history[nextIndex] });

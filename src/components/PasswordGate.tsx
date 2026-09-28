@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { decryptContent, fetchEncryptedPayload, WrongPasswordError, type DashboardContent } from "../lib/decrypt";
-
-const SESSION_KEY = "srjorge-dashboard-unlocked";
+import { SESSION_PASSWORD_KEY as SESSION_KEY } from "../lib/crypto";
 
 type Props = {
   onUnlock: (content: DashboardContent) => void;
