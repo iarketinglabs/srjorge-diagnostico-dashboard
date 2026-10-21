@@ -27,3 +27,6 @@ src/content/
 *.njsproj
 *.sln
 *.sw?
+
+# Saída do teste e2e (PDF/Word/MD baixados)
+e2e/out/

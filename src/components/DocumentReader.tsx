@@ -23,6 +23,7 @@ import { CommentModal } from "./CommentModal";
 import { CommentThread } from "./CommentThread";
 import { DocValidationChecks } from "./DocValidationChecks";
 import { EditHistoryPanel } from "./EditHistoryPanel";
+import { ExportMenu } from "./ExportMenu";
 import { confirmDiscardEdits } from "../lib/editGuard";
 import { RevisionConflictError, saveRevision, type Revision } from "../lib/revisions";
 
@@ -294,6 +295,7 @@ export function DocumentReader({
       {file && <Breadcrumbs path={file.path} title={file.title} onFocusFolder={onFocusFolder} onNavigate={onNavigate} />}
       {file && (
         <div className="reader-toolbar-actions">
+          <ExportMenu file={file} latestRevision={latestRevision} disabled={editing} />
           <button type="button" className="reader-comment-mode-btn" onClick={() => setHistoryOpen(true)} title="Histórico de edições">
             🕘 Histórico de edições
           </button>

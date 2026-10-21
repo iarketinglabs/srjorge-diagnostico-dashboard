@@ -39,3 +39,28 @@ node scripts/build-content.mjs --src "<caminho>" --out src/content/content.json
 DASHBOARD_PASSWORD="<senha>" node scripts/encrypt-content.mjs
 npm run dev
 ```
+
+## Exportar o documento
+
+Com um documento aberto no painel, o botão **⬇ Exportar** gera o arquivo em **Word (.docx)**, **PDF** ou **Markdown (.md)**. A geração acontece no navegador, com o texto que está na tela, incluindo edições feitas no site. Comentários não entram no arquivo.
+
+- Word e PDF seguem as mesmas regras: títulos, listas (inclusive tarefas), tabelas com cabeçalho repetido, código, citações e links externos. Links entre documentos viram texto.
+- No PDF, emoji são removidos e o painel informa quantos foram retirados; o Word mantém os emoji.
+- O botão fica desabilitado durante a edição de um documento.
+- Os módulos de Word e PDF só são baixados na primeira exportação em cada formato.
+- As fontes do PDF são subsets da DejaVu (licença em `src/assets/pdf-fonts/LICENSE-DejaVu.txt`). A lista de caracteres que elas cobrem está em `src/lib/export/glyphs.ts`; `scripts/glyph-coverage.test.mjs` falha se a lista e as fontes divergirem.
+
+## Testes
+
+```bash
+npm test                                   # unitários, estrutura dos arquivos e corpus da base documental
+npm run lint
+npm run build
+npm run preview                            # em outro terminal
+DASHBOARD_PASSWORD="..." npm run test:e2e  # abre o painel no Chrome instalado e valida os downloads
+```
+
+- `scripts/export.test.mjs`: Markdown exato, pacote .docx válido, texto extraível e paginação do PDF, tabelas longas, código, emoji e sanitização.
+- `scripts/glyph-coverage.test.mjs`: as fontes embutidas cobrem os caracteres do fixture e de todos os documentos visíveis.
+- `scripts/export-corpus.test.mjs`: exporta cada documento visível nos três formatos. Usa `DIAGNOSTICO_SRC` ou, se existir, `../SrJorge/executions/src/diagnostico`.
+- `e2e/export.e2e.mjs`: fluxo completo no navegador. Para o site publicado, defina `E2E_BASE="https://iarketinglabs.github.io/srjorge-diagnostico-dashboard/"`. A senha vem só do ambiente e a pasta de saída `e2e/out/` não é versionada.
